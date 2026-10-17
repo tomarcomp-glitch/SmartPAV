@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SmartPAV</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#24506f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SmartPAV">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%A7%A0%3C/text%3E%3C/svg%3E">
+
+
+<style>
+:root{--bg:#eef0f2;--sf:#fff;--tx:#1b2430;--mu:#5d6773;--ln:#d5dae0;--ac:#24506f;--at:#fff;--as:#e1ebf2;--dg:#b3261e;--ok:#1e7a46;--wn:#8a5a00;--r:6px}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#12171c;--sf:#1b222a;--tx:#e6ebf0;--mu:#97a3af;--ln:#2f3944;--ac:#6cb2e0;--at:#0c1319;--as:#20323f;--dg:#ff8a80;--ok:#6fd39b;--wn:#f0b45a}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,"Segoe UI",Roboto,sans-serif}
+h1{font-size:1.35rem;margin:0 0 .4rem}h2{font-size:1.02rem;margin:.2rem 0 .6rem}.mu{color:var(--mu)}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+.side{background:var(--sf);border-right:1px solid var(--ln);padding:1rem .7rem}
+.brand{font-weight:700;font-size:1.1rem;padding:.2rem .6rem 1rem}
+.grp{font-size:.78rem;color:var(--mu);font-weight:600;padding:.9rem .6rem .25rem}
+.side a{display:block;padding:.5rem .7rem;border-radius:var(--r);color:var(--tx);text-decoration:none}
+.side a:hover{background:var(--as)}.side a[aria-current=page]{background:var(--ac);color:var(--at);font-weight:600}
+main{padding:1.4rem;max-width:1150px;width:100%}
+.panel{background:var(--sf);border:1px solid var(--ln);border-radius:var(--r);padding:1rem;margin-bottom:1rem}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:.8rem}
+.g4{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+button{font:inherit;padding:.45rem .9rem;border-radius:var(--r);border:1px solid var(--ln);background:var(--sf);color:var(--tx);cursor:pointer;min-height:40px}
+button:hover{border-color:var(--ac)}button.primary{background:var(--ac);color:var(--at);border-color:var(--ac);font-weight:600}
+button.danger{color:var(--dg)}button.sm{min-height:32px;padding:.2rem .6rem}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+input,select,textarea{font:inherit;width:100%;padding:.45rem .55rem;border:1px solid var(--ln);border-radius:var(--r);background:var(--bg);color:var(--tx);min-height:40px}
+label{display:block;font-weight:600;margin-bottom:.2rem}.field{margin-bottom:.8rem}.er{color:var(--dg);font-size:.85rem;min-height:1.1em}
+.tb{overflow-x:auto}table{border-collapse:collapse;width:100%}th,td{padding:.45rem .5rem;border-bottom:1px solid var(--ln);text-align:left;white-space:nowrap}
+th{font-size:.82rem;color:var(--mu)}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}td.ac{text-align:right}td input,td select{min-height:34px;padding:.25rem .4rem}
+.vz{padding:1.6rem;text-align:center;color:var(--mu)}.wn{color:var(--wn);font-size:.88rem;margin:.2rem 0}
+.tot{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+dialog{border:1px solid var(--ln);border-radius:var(--r);background:var(--sf);color:var(--tx);padding:1.2rem;width:min(460px,92vw)}dialog::backdrop{background:rgba(0,0,0,.45)}
+.rd{display:flex;justify-content:flex-end;gap:.5rem;margin-top:1rem}
+#av{position:fixed;right:1rem;bottom:1rem;display:flex;flex-direction:column;gap:.5rem;z-index:20}.avs{background:var(--tx);color:var(--bg);padding:.6rem .9rem;border-radius:var(--r);max-width:340px}.avs.e{background:var(--dg);color:#fff}
+#imp{display:none}.pimg{width:270px;height:270px;border:1px solid var(--ln);border-radius:var(--r);display:grid;place-items:center;background:#fff;overflow:hidden;flex:none}.pimg img{max-width:100%;max-height:100%;object-fit:contain}.bd{display:inline-block;background:var(--as);border:1px solid var(--ln);border-radius:4px;padding:0 .35rem;margin:0 .15rem .15rem 0;font-variant-numeric:tabular-nums}.pb{break-after:page}.seg{display:inline-flex;gap:.3rem;margin-right:.5rem}.seg .on{background:var(--ac);color:var(--at);border-color:var(--ac)}@media print{#imp .bd{background:none;border:1px solid #000}#imp .np{display:none}}
+@media (max-width:760px){.app{grid-template-columns:1fr}.side{border-right:0;border-bottom:1px solid var(--ln)}main{padding:1rem}}
+@media print{.app,#av,dialog,#bkbar{display:none!important}#imp{display:block;color:#000;background:#fff}#imp table{font-size:12px}tr{break-inside:avoid}@page{size:A4;margin:12mm}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="side" aria-label="Principal">
+<div class="brand">SmartPAV</div>
+<div class="grp">Comercial</div>
+<a href="#/orcar">Novo orçamento</a><a href="#/salvos">Orçamentos salvos</a>
+<div class="grp">Produção</div>
+<a href="#/r-corte">Plano de corte</a><a href="#/r-barras">Otimização de barras</a><a href="#/r-fichas">Fichas de produção</a>
+<div class="grp">Compras</div>
+<a href="#/r-compras">Lista de compras</a><a href="#/r-acess">Relação de acessórios</a><a href="#/r-vidros">Relação de vidros</a>
+<div class="grp">Cadastros</div>
+<a href="#/perfis">Perfis</a><a href="#/acessorios">Acessórios</a><a href="#/vidros">Vidros</a><a href="#/cores">Cores dos perfis</a>
+<div class="grp">Produtos</div>
+<a href="#/produtos">Composição dos produtos</a>
+<div class="grp">Sistema</div>
+<a href="#/config">Configurações</a><a href="#/dados">Backup e migração</a>
+</nav>
+<main id="tela" tabindex="-1"></main>
+</div>
+<div id="av" aria-live="polite"></div><dialog id="dlg"></dialog><div id="imp"></div>
+<script>
+"use strict";
+const $=(s,e=document)=>e.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const brl=n=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(n)||0);
+const nf=(n,d=3)=>(Number(n)||0).toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+const hoje=()=>new Date().toLocaleDateString("pt-BR");
+function aviso(m,e){const el=document.createElement("div");el.className="avs"+(e?" e":"");el.textContent=m;$("#av").appendChild(el);setTimeout(()=>el.remove(),e?6000:3000)}
+const novo=()=>({schema:2,perfis:[],acessorios:[],vidros:[],produtos:[],orcamentos:[],config:{custoKg:42,mkp:2.1,empresa:"SmartPAV",validade:10,minKg:100}});
+let D=novo();const KEY="smartpav:v2";
+const IMG_DB="smartpav_images_v1",IMG_STORE="images",IMG_URLS={};
+let imgDb;
+function abrirBancoImagens(){return new Promise((resolve,reject)=>{const r=indexedDB.open(IMG_DB,1);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains(IMG_STORE))db.createObjectStore(IMG_STORE,{keyPath:"id"})};r.onsuccess=()=>{imgDb=r.result;resolve(imgDb)};r.onerror=()=>reject(r.error||new Error("IndexedDB indisponível"))})}
+function imgTx(mode,fn){return new Promise((resolve,reject)=>{const tx=imgDb.transaction(IMG_STORE,mode),store=tx.objectStore(IMG_STORE);try{fn(store)}catch(e){reject(e);return}tx.oncomplete=()=>resolve(true);tx.onerror=()=>reject(tx.error||new Error("Falha no banco de imagens"));tx.onabort=()=>reject(tx.error||new Error("Operação cancelada"))})}
+function guardarImagem(id,blob){return imgTx("readwrite",s=>s.put({id,blob,at:Date.now()}))}
+function obterImagem(id){return new Promise((resolve,reject)=>{const r=imgDb.transaction(IMG_STORE,"readonly").objectStore(IMG_STORE).get(id);r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error)})}
+function excluirImagem(id){return imgTx("readwrite",s=>s.delete(id))}
+function dataURLBlob(data){return fetch(data).then(r=>r.blob())}
+function urlImagem(id){return id?IMG_URLS[id]||"":""}
+function thumbPerfil(c,s=42){const u=c&&c.imgKey?urlImagem(c.imgKey):"";return u?`<img src="${esc(u)}" alt="" style="width:${s}px;height:${s}px;object-fit:contain;vertical-align:middle;margin-right:.45rem;border-radius:4px;background:#fff">`:""}
+function salvar(){try{const d=JSON.parse(JSON.stringify(D));d.produtos.forEach(p=>delete p.img);localStorage.setItem(KEY,JSON.stringify(d));return true}catch(e){aviso("Não foi possível salvar os dados. Exporte um backup agora.",1);return false}}
+async function carregarImagens(){for(const p of D.perfis){if(p.img){const id=p.imgKey||uid();await guardarImagem(id,await dataURLBlob(p.img));p.imgKey=id;delete p.img;salvar()}}for(const p of D.perfis){if(p.imgKey&&!IMG_URLS[p.imgKey]){const rec=await obterImagem(p.imgKey);if(rec&&rec.blob)IMG_URLS[p.imgKey]=URL.createObjectURL(rec.blob);else{delete p.imgKey;salvar()}}}for(const p of D.produtos){if(p.img){const id=p.imgKey||uid();await guardarImagem(id,await dataURLBlob(p.img));p.imgKey=id;delete p.img;salvar()}}for(const p of D.produtos){if(p.imgKey&&!IMG_URLS[p.imgKey]){const rec=await obterImagem(p.imgKey);if(rec&&rec.blob)IMG_URLS[p.imgKey]=URL.createObjectURL(rec.blob);else{delete p.imgKey;salvar()}}}}
+async function iniciar(){try{await abrirBancoImagens();await carregarImagens();render()}catch(e){aviso("Não foi possível abrir o banco de imagens. Use um navegador compatível e tente novamente.",1);render()}}
+function migrar(o){
+ if(o&&o.schema===2){const d=Object.assign(novo(),o);d.config=Object.assign(novo().config,o.config||{});d.perfis.forEach(x=>{if(!x.barra)x.barra=6050});d.produtos.forEach(x=>{if(x.img&&!/^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(x.img))delete x.img});return d}
+ if(!o||!("SmartPavPerfis" in o||"SmartPavAcessorios" in o||"SmartPavVidros" in o||"SmartPavOrcamentos" in o))throw new Error("formato");
+ const J=k=>{try{return JSON.parse(o[k])||[]}catch(e){return[]}};
+ const P=J("SmartPavPerfis"),A=J("SmartPavAcessorios"),V=J("SmartPavVidros"),O=J("SmartPavOrcamentos"),d=novo(),rel=[];
+ const fx=f=>{f=String(f).trim();if(!f.includes("/1000"))f=f.replace(/L/g,"l").replace(/A/g,"a");return f.replace(/([LAla\d)])\s*[xX]\s*(?=[\dLAla(])/g,"$1*")};
+ d.produtos=[...new Set([...P,...A,...V].map(x=>x.prod))].map(n=>({id:uid(),nome:n,perfis:[],acessorios:[],vidros:[]}));
+ const pr=n=>d.produtos.find(p=>p.nome===n),dsc={};
+ P.forEach(p=>{if(p.desc!=="NOVO PERFIL")dsc[p.perfil+p.uso]=p.desc});
+ const t=P.filter(p=>p.perfil==="EX9999");if(t.length)rel.push("Perfil de teste EX9999 (Janela de correr) não foi migrado.");
+ P.filter(p=>p.perfil!=="EX9999").forEach(p=>{
+  let c=d.perfis.find(x=>x.codigo===p.perfil);if(!c){c={id:uid(),codigo:p.perfil,peso:p.peso,barra:6050};d.perfis.push(c)}
+  const nd=p.desc==="NOVO PERFIL"&&dsc[p.perfil+p.uso];if(nd)rel.push("Descrição de "+p.prod+" / "+p.perfil+" preenchida como "+nd+".");
+  pr(p.prod).perfis.push({perfilId:c.id,desc:nd||p.desc,uso:p.uso,desconto:p.desconto||0,divisor:p.divisor||1,qtd:String(p.formulaQtd)})});
+ const pf=P.find(p=>p.perfil!=="EX9999");if(pf)d.config.custoKg=pf.custo;
+ A.forEach(x=>{const ds=x.desc.trim(),cu=Number(x.custo)||0;let c=d.acessorios.find(y=>y.desc===ds&&y.custo===cu);
+  if(!c){c={id:uid(),codigo:"AC-"+String(d.acessorios.length+1).padStart(3,"0"),desc:ds,custo:cu};d.acessorios.push(c)}
+  const f=fx(x.formulaQtd);if(f!==String(x.formulaQtd).trim())rel.push("Fórmula de "+ds+" ("+x.prod+"): "+x.formulaQtd.trim()+" → "+f);
+  pr(x.prod).acessorios.push({acId:c.id,qtd:f})});
+ V.forEach(x=>{let c=d.vidros.find(y=>y.tipo===x.desc&&y.custo===x.custo);if(!c){c={id:uid(),tipo:x.desc,custo:x.custo};d.vidros.push(c)}
+  pr(x.prod).vidros.push({vidroId:c.id,descL:x.descL||0,divL:x.divL||1,descA:x.descA||0,divA:x.divA||1,qtd:String(x.formulaQtd)})});
+ d.orcamentos=O.map(q=>({id:uid(),numero:q.numero,cliente:q.cliente,local:q.local,car:q.obsCaracteristicas,pag:q.obsPagamento,ent:q.obsEntrega,data:q.data,total:q.totalGeral,
+  itens:q.itens.map(i=>({produto:i.produto,largura:i.largura,altura:i.altura,quantidade:i.quantidade,mkp:i.fatorMkp,custoUnit:i.unitarioCusto,unitarioVenda:i.unitarioVenda,total:i.total,av:[]}))}));
+ d.relatorio=rel;return d}
+try{const b=localStorage.getItem(KEY);if(b)D=migrar(JSON.parse(b));else{const o={};["Perfis","Acessorios","Vidros","Orcamentos"].forEach(k=>{const v=localStorage.getItem("SmartPav"+k);if(v)o["SmartPav"+k]=v});if(Object.keys(o).length){D=migrar(o);salvar()}}}catch(e){aviso("Não foi possível ler os dados salvos.",1)}
+
+function ev(f,l,a){let s=String(f).trim().replace(/([LAla\d)])\s*[xX]\s*(?=[\dLAla(])/g,"$1*");
+ s=s.replace(/[LAla]/g,c=>"("+({l:l,a:a,L:l*1000,A:a*1000}[c]).toFixed(6)+")");
+ if(!s||!/^[\d\s+\-*/().]+$/.test(s))return{e:1,v:0};
+ try{const v=Function('"use strict";return ('+s+')')();return isFinite(v)?{v}:{e:1,v:0}}catch(x){return{e:1,v:0}}}
+const gP=id=>D.perfis.find(x=>x.id===id),gA=id=>D.acessorios.find(x=>x.id===id),gV=id=>D.vidros.find(x=>x.id===id);
+const qi=v=>Math.trunc(v+1e-9);
+function custo(p,l,a,ck,vid){const av=new Set();let tp=0,ta=0,tv=0;
+ if(!p||!(p.perfis.length+p.acessorios.length+p.vidros.length))av.add("Produto sem composição cadastrada.");
+ else{
+ p.perfis.forEach(x=>{const c=gP(x.perfilId);if(!c){av.add("Perfil removido do cadastro.");return}
+  const q=ev(x.qtd,l,a);if(q.e)av.add("Quantidade inválida em "+c.codigo+": "+x.qtd);
+  const m=((x.uso==="L"?l:a)-(+x.desconto||0))/(+x.divisor||1);
+  if(m<=0)av.add("Corte ≤ 0 em "+c.codigo+".");else if(m*1000>6050)av.add("Peça "+c.codigo+" de "+Math.round(m*1000)+" mm maior que a barra de 6050 mm.");
+  tp+=c.peso*Math.max(m,0)*qi(q.v)*(ck==null?D.config.custoKg:ck)});
+ p.acessorios.forEach(x=>{const c=gA(x.acId);if(!c){av.add("Acessório removido do cadastro.");return}
+  const q=ev(x.qtd,l,a);if(q.e)av.add("Quantidade inválida em "+c.desc+": "+x.qtd);else if(q.v<=0)av.add("Quantidade zero em "+c.desc+".");ta+=c.custo*q.v});
+ p.vidros.forEach(x=>{const c=gV(vid||x.vidroId);if(!c){av.add("Vidro removido do cadastro.");return}
+  const w=(l-(+x.descL||0))/(+x.divL||1),h=(a-(+x.descA||0))/(+x.divA||1),q=ev(x.qtd,l,a);
+  if(q.e)av.add("Quantidade inválida no vidro "+c.tipo+".");
+  if(w<=0||h<=0)av.add("Medida pequena demais para o vidro "+c.tipo+" (vão do vidro ≤ 0).");else tv+=c.custo*w*h*qi(q.v)})}
+ return{tp,ta,tv,u:tp+ta+tv,av:[...av]}}
+
+const dlg=$("#dlg");function abrir(h){dlg.innerHTML=h;if(!dlg.open)dlg.showModal()}function fechar(){if(dlg.open)dlg.close()}
+function confirmar(m,b="Confirmar"){return new Promise(r=>{abrir(`<p>${esc(m)}</p><div class="rd"><button id="n">Cancelar</button><button class="primary danger" id="s">${esc(b)}</button></div>`);$("#n").onclick=()=>{fechar();r(false)};$("#s").onclick=()=>{fechar();r(true)};dlg.oncancel=()=>r(false)})}
+
+const CAD={
+ perfis:{t:"Perfis",un:"perfil",lista:()=>D.perfis,campos:[["codigo","Código","t"],["peso","Peso (kg/m)","n"],["barra","Barra (mm)","n"]],uso:(p,id)=>p.perfis.some(x=>x.perfilId===id)},
+ acessorios:{t:"Acessórios",un:"acessório",lista:()=>D.acessorios,campos:[["codigo","Código","t"],["desc","Descrição","t"],["custo","Custo (R$)","n"]],uso:(p,id)=>p.acessorios.some(x=>x.acId===id)},
+ vidros:{t:"Vidros",un:"vidro",lista:()=>D.vidros,campos:[["tipo","Tipo","t"],["custo","Custo por m² (R$)","n"]],uso:(p,id)=>p.vidros.some(x=>x.vidroId===id)}};
+let busca="";
+function cadView(k){const C=CAD[k],q=busca.trim().toLowerCase();
+ const L=C.lista().filter(r=>!q||C.campos.some(c=>String(r[c[0]]).toLowerCase().includes(q)));
+ return `<div class="head"><h1>${C.t}</h1><button class="primary" data-a="cnovo" data-k="${k}">Novo ${C.un}</button></div>
+ <div class="field"><input id="busca" type="search" placeholder="Buscar" aria-label="Buscar" value="${esc(busca)}" style="max-width:320px"></div>
+ <div class="panel tb">${L.length?`<table><thead><tr>${k==="perfis"?"<th>Imagem</th>":""}${C.campos.map(c=>`<th class="${c[2]==="n"?"n":""}">${c[1]}</th>`).join("")}<th></th></tr></thead><tbody>${L.map(r=>`<tr>${k==="perfis"?`<td>${thumbPerfil(r,48)}</td>`:""}${C.campos.map(c=>`<td class="${c[2]==="n"?"n":""}">${c[2]==="n"?(c[0]==="peso"?nf(r[c[0]]):c[0]==="barra"?(r[c[0]]||0)+" mm":brl(r[c[0]])):esc(r[c[0]])}</td>`).join("")}<td class="ac"><button class="sm" data-a="ced" data-k="${k}" data-id="${r.id}">Editar</button> <button class="sm danger" data-a="cdel" data-k="${k}" data-id="${r.id}">Excluir</button></td></tr>`).join("")}</tbody></table>`:`<div class="vz">${C.lista().length?"Nada encontrado.":"Nenhum item cadastrado. Cadastre o primeiro."}</div>`}</div>`}
+let cadPerfilImgId=null,cadPerfilR=null;function cadEditar(k,id){const C=CAD[k],r=id?C.lista().find(x=>x.id===id):{id:uid()};cadPerfilImgId=k==="perfis"?r.id:null;cadPerfilR=k==="perfis"?r:null;
+ abrir(`<form id="f" novalidate><h2>${id?"Editar":"Novo"} ${C.un}</h2>${C.campos.map(c=>`<div class="field"><label for="f-${c[0]}">${c[1]} *</label><input id="f-${c[0]}" ${c[2]==="n"?'type="number" inputmode="decimal" step="any" min="0"':'type="text"'} value="${esc(r[c[0]]??(c[0]==="barra"?6050:""))}"><div class="er" id="e-${c[0]}"></div></div>`).join("")}${k==="perfis"?`<div class="field"><label>Imagem do perfil</label><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div id="pfprev" style="width:100px;height:70px;border:1px solid #ddd;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#fff;overflow:hidden">${r.imgKey&&urlImagem(r.imgKey)?`<img src="${esc(urlImagem(r.imgKey))}" style="max-width:100%;max-height:100%;object-fit:contain">`:`<span class="mu">Sem imagem</span>`}</div><div><button type="button" class="sm" data-a="pfimg">${r.imgKey?"Trocar imagem":"Adicionar imagem"}</button> ${r.imgKey?`<button type="button" class="sm danger" data-a="pfimgdel">Remover</button>`:""}<input id="pfimgf" type="file" accept="image/*" hidden></div></div><p class="mu">A imagem aparecerá nos relatórios que listam perfis.</p></div>`:""}<div class="rd"><button type="button" id="x">Cancelar</button><button class="primary" type="submit">Salvar ${C.un}</button></div></form>`);
+ dlg.querySelector("input").focus();$("#x").onclick=fechar;
+ $("#f").onsubmit=e=>{e.preventDefault();let ok=true;const n={id:r.id,...(k==="perfis"&&r.imgKey?{imgKey:r.imgKey}:{})};
+  C.campos.forEach(c=>{const v=$("#f-"+c[0]).value.trim();$("#e-"+c[0]).textContent="";
+   if(!v||(c[2]==="n"&&!(Number(v)>=0))||(c[0]==="barra"&&!(Number(v)>0&&Number(v)%50===0))){$("#e-"+c[0]).textContent=c[0]==="barra"?"Use um múltiplo de 50 mm.":"Preencha corretamente.";ok=false}n[c[0]]=c[2]==="n"?Number(v):v});
+  const ch=C.campos[0][0];if(ok&&C.lista().some(x=>x.id!==n.id&&String(x[ch]).toLowerCase()===String(n[ch]).toLowerCase())){$("#e-"+ch).textContent="Já existe um cadastro com este valor.";ok=false}
+  if(!ok)return;const L=C.lista(),i=L.findIndex(x=>x.id===n.id);if(i>=0)L[i]=n;else L.push(n);
+  if(salvar()){fechar();aviso("Cadastro salvo.");render()}}}
+async function cadExcluir(k,id){const C=CAD[k],r=C.lista().find(x=>x.id===id);if(!r)return;
+ if(D.produtos.some(p=>C.uso(p,id))){aviso("Este item está em uso (composição de produto ou orçamento) ou é o único cadastrado. Remova o uso antes de excluir.",1);return}
+ if(await confirmar(`Excluir "${r[C.campos[0][0]]}"? Esta ação não pode ser desfeita.`,"Excluir")){const L=C.lista();L.splice(L.indexOf(r),1);salvar();aviso("Item excluído.");render()}}
+
+let prodSel=null;
+function selOpt(L,v,f){return L.map(x=>`<option value="${x.id}" ${x.id===v?"selected":""}>${esc(f(x))}</option>`).join("")}
+function prodView(){const P=D.produtos;if(!P.find(p=>p.id===prodSel))prodSel=P[0]?.id;const p=P.find(x=>x.id===prodSel);
+ const ip=(l,i,k,v,t="number")=>`<input data-l="${l}" data-i="${i}" data-k="${k}" type="${t}" ${t==="number"?'step="any" inputmode="decimal"':""} value="${esc(v)}">`;
+ let h=`<div class="head"><h1>Composição dos produtos</h1><div><button class="primary" data-a="pnovo">Novo produto</button></div></div>
+ <p class="mu">Fórmulas de quantidade: <b>l</b> e <b>a</b> = largura e altura em metros; <b>L</b> e <b>A</b> = em milímetros. Ex.: <code>a / 0.071</code>, <code>((L-60)/2*4)/1000</code>.</p>
+ <div class="field"><label for="psel">Produto</label><select id="psel" style="max-width:420px">${selOpt(P,prodSel,x=>x.nome)}</select></div>`;
+ if(!p)return h+`<div class="vz">Nenhum produto. Crie o primeiro.</div>`;
+ h+=`<div class="rd" style="justify-content:flex-start"><button class="sm" data-a="pren">Renomear</button><button class="sm danger" data-a="pdel">Excluir produto</button></div>
+ <div class="panel" style="display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap"><div class="pimg">${p.imgKey&&urlImagem(p.imgKey)?`<img src="${esc(urlImagem(p.imgKey))}" alt="Imagem de ${esc(p.nome)}">`:'<span class="mu">Sem imagem</span>'}</div><div style="flex:1;min-width:240px"><h2>Imagem do produto</h2><p class="mu">Aceita PNG, JPG, WebP, GIF ou SVG. O sistema reduz a imagem sozinho para até 480 px. Ideal: a partir de 600 px de largura, com fundo transparente ou branco.</p><button class="sm" data-a="pimg">${p.imgKey?"Trocar imagem":"Adicionar imagem"}</button> ${p.imgKey?'<button class="sm danger" data-a="pimgdel">Remover imagem</button>':""}<input id="pimgf" type="file" accept="image/*" hidden></div></div>
+ <div class="panel tb"><h2>Perfis</h2><table><thead><tr><th>Perfil</th><th>Descrição</th><th>Uso</th><th>Desconto (m)</th><th>Divisor</th><th>Qtd (fórmula)</th><th></th></tr></thead><tbody>${p.perfis.map((x,i)=>`<tr><td><select data-l="perfis" data-i="${i}" data-k="perfilId">${selOpt(D.perfis,x.perfilId,c=>c.codigo+" · "+nf(c.peso)+" kg/m")}</select></td><td>${ip("perfis",i,"desc",x.desc,"text")}</td><td><select data-l="perfis" data-i="${i}" data-k="uso"><option ${x.uso==="L"?"selected":""}>L</option><option ${x.uso==="A"?"selected":""}>A</option></select></td><td>${ip("perfis",i,"desconto",x.desconto)}</td><td>${ip("perfis",i,"divisor",x.divisor)}</td><td>${ip("perfis",i,"qtd",x.qtd,"text")}</td><td><button class="sm danger" data-a="ldel" data-l="perfis" data-i="${i}">Remover</button></td></tr>`).join("")}</tbody></table><p><button class="sm" data-a="ladd" data-l="perfis">Adicionar perfil</button></p></div>
+ <div class="panel tb"><h2>Acessórios</h2><table><thead><tr><th>Acessório</th><th>Qtd (fórmula)</th><th></th></tr></thead><tbody>${p.acessorios.map((x,i)=>`<tr><td><select data-l="acessorios" data-i="${i}" data-k="acId">${selOpt(D.acessorios,x.acId,c=>c.codigo+" · "+c.desc)}</select></td><td>${ip("acessorios",i,"qtd",x.qtd,"text")}</td><td><button class="sm danger" data-a="ldel" data-l="acessorios" data-i="${i}">Remover</button></td></tr>`).join("")}</tbody></table><p><button class="sm" data-a="ladd" data-l="acessorios">Adicionar acessório</button></p></div>
+ <div class="panel tb"><h2>Vidros</h2><table><thead><tr><th>Vidro</th><th>Desc. larg. (m)</th><th>Div. larg.</th><th>Desc. alt. (m)</th><th>Div. alt.</th><th>Qtd (fórmula)</th><th></th></tr></thead><tbody>${p.vidros.map((x,i)=>`<tr><td><select data-l="vidros" data-i="${i}" data-k="vidroId">${selOpt(D.vidros,x.vidroId,c=>c.tipo)}</select></td><td>${ip("vidros",i,"descL",x.descL)}</td><td>${ip("vidros",i,"divL",x.divL)}</td><td>${ip("vidros",i,"descA",x.descA)}</td><td>${ip("vidros",i,"divA",x.divA)}</td><td>${ip("vidros",i,"qtd",x.qtd,"text")}</td><td><button class="sm danger" data-a="ldel" data-l="vidros" data-i="${i}">Remover</button></td></tr>`).join("")}</tbody></table><p><button class="sm" data-a="ladd" data-l="vidros">Adicionar vidro</button></p></div>`;
+ return h}
+function pedirNome(t,v=""){return new Promise(r=>{abrir(`<form id="f"><h2>${t}</h2><div class="field"><label for="nm">Nome do produto</label><input id="nm" value="${esc(v)}"></div><div class="rd"><button type="button" id="x">Cancelar</button><button class="primary">Salvar produto</button></div></form>`);$("#nm").focus();$("#x").onclick=()=>{fechar();r(null)};$("#f").onsubmit=e=>{e.preventDefault();const n=$("#nm").value.trim().toUpperCase();if(n){fechar();r(n)}}})}
+
+const Cart={itens:[],edit:null,num:"",cliente:"",local:"",car:"",pag:"",ent:"",f:{p:"",l:"1.000",a:"1.000",q:"1",m:null},cur:null};
+function calcF(){const p=D.produtos.find(x=>x.id===Cart.f.p),l=parseFloat(Cart.f.l)||0,a=parseFloat(Cart.f.a)||0,q=parseInt(Cart.f.q)||1,m=parseFloat(Cart.f.m)||1;
+ const cor=D.cores.find(x=>x.id===Cart.f.c)||D.cores[0],c=custo(p,l,a,cor&&cor.custoKg,Cart.f.v||"");c.cor=cor;c.vd=Cart.f.v?gV(Cart.f.v):null;c.p=p;c.l=l;c.a=a;c.q=q;c.m=m;c.uv=Math.round(c.u*m*100)/100;Cart.cur=c;return c}
+function prevHTML(){const c=calcF();return `<p>Perfis <b>${brl(c.tp)}</b> · Acessórios <b>${brl(c.ta)}</b> · Vidros <b>${brl(c.tv)}</b> · Custo unitário <b>${brl(c.u)}</b></p><p>Venda unitária <b>${brl(c.uv)}</b> · Total do item <b>${brl(c.uv*c.q)}</b></p>${c.av.map(w=>`<div class="wn">⚠ ${esc(w)}</div>`).join("")}`}
+const totalCart=()=>Cart.itens.reduce((s,i)=>s+i.total,0);
+function orcView(){const C=Cart;if(!D.produtos.find(p=>p.id===C.f.p))C.f.p=D.produtos[0]?.id||"";if(C.f.m==null)C.f.m=D.config.mkp;
+ const inp=(id,l,v,ex="")=>`<div class="field"><label for="${id}">${l}</label><input id="${id}" type="number" step="any" inputmode="decimal" value="${esc(v)}" ${ex}></div>`;
+ return `<div class="head"><h1>Novo orçamento</h1></div>${C.edit?`<div class="panel">Editando o orçamento <b>#${esc(C.num)}</b> de ${esc(C.cliente)}. <button class="sm" data-a="ocancel">Cancelar edição</button></div>`:""}
+ <div class="panel"><h2>Adicionar item</h2><div class="g4"><div class="field"><label for="o-p">Produto</label><select id="o-p">${selOpt(D.produtos,C.f.p,x=>x.nome)}</select></div><div class="field"><label for="o-c">Cor dos perfis</label><select id="o-c">${selOpt(D.cores,C.f.c||(D.cores[0]&&D.cores[0].id),x=>x.nome+" · "+brl(x.custoKg)+"/kg")}</select></div><div class="field"><label for="o-v">Vidro</label><select id="o-v"><option value="">Padrão do produto</option>${selOpt(D.vidros,C.f.v,x=>x.tipo+" · "+brl(x.custo)+"/m²")}</select></div>${inp("o-l","Largura (m)",C.f.l)}${inp("o-a","Altura (m)",C.f.a)}${inp("o-q","Quantidade",C.f.q,'min="1"')}${inp("o-m","Fator de venda (MKP)",C.f.m)}</div><div id="prev">${prevHTML()}</div><button class="primary" data-a="oadd">Adicionar item</button></div>
+ <div class="panel tb"><h2>Itens do orçamento</h2>${C.itens.length?`<table><thead><tr><th>#</th><th>Produto</th><th>Medidas (L × A)</th><th>Qtd</th><th>MKP</th><th class="n">Venda unit.</th><th class="n">Total</th><th></th></tr></thead><tbody>${C.itens.map((i,n)=>`<tr><td>${n+1}</td><td>${thumb(i.produto)}<b>${esc(i.produto)}</b>${descItem(i)}${(i.av||[]).map(w=>`<div class="wn">⚠ ${esc(w)}</div>`).join("")}</td><td>${nf(i.largura)} × ${nf(i.altura)} m</td><td><input data-i="${n}" data-k="quantidade" type="number" min="1" value="${i.quantidade}" style="width:70px"></td><td><input data-i="${n}" data-k="mkp" type="number" step="0.05" value="${i.mkp}" style="width:80px"></td><td class="n">${brl(i.unitarioVenda)}</td><td class="n"><b>${brl(i.total)}</b></td><td class="ac"><button class="sm danger" data-a="orem" data-i="${n}">Remover</button></td></tr>`).join("")}</tbody></table>`:`<div class="vz">Nenhum item adicionado ainda.</div>`}</div>
+ <div class="panel"><div class="g4"><div class="field"><label for="c-num">Nº do orçamento *</label><input id="c-num" value="${esc(C.num)}" ${C.edit?"disabled":""}></div><div class="field"><label for="c-cliente">Cliente / projeto *</label><input id="c-cliente" value="${esc(C.cliente)}"></div><div class="field"><label for="c-local">Local da obra</label><input id="c-local" value="${esc(C.local)}"></div></div>
+ <div class="g4"><div class="field"><label for="c-car">Características das esquadrias</label><textarea id="c-car" rows="3">${esc(C.car)}</textarea></div><div class="field"><label for="c-pag">Condições de pagamento</label><textarea id="c-pag" rows="3">${esc(C.pag)}</textarea></div><div class="field"><label for="c-ent">Entrega / instalação</label><textarea id="c-ent" rows="3">${esc(C.ent)}</textarea></div></div>
+ <div class="head"><div><span class="mu">Valor total de venda</span><div class="tot" id="tot">${brl(totalCart())}</div></div><div><button class="danger" data-a="olimpar">Limpar lista</button> <button class="primary" data-a="osalvar">Salvar orçamento</button></div></div></div>`}
+function resetCart(){Object.assign(Cart,{itens:[],edit:null,num:"",cliente:"",local:"",car:"",pag:"",ent:""})}
+function salvarOrc(){const C=Cart,num=C.num.trim(),cli=C.cliente.trim();
+ if(!num||!cli){aviso("Preencha o número do orçamento e o cliente.",1);return}
+ if(!C.itens.length){aviso("Adicione ao menos um item antes de salvar.",1);return}
+ if(!C.edit&&D.orcamentos.some(o=>o.numero===num)){aviso("Já existe um orçamento com o número "+num+".",1);return}
+ const o={id:C.edit||uid(),numero:num,cliente:cli,local:C.local.trim(),car:C.car,pag:C.pag,ent:C.ent,data:C.dataOrig||hoje(),itens:JSON.parse(JSON.stringify(C.itens)),total:totalCart()};
+ const i=D.orcamentos.findIndex(x=>x.id===o.id);if(i>=0)D.orcamentos[i]=o;else D.orcamentos.push(o);
+ if(salvar()){aviso("Orçamento "+num+" salvo.");resetCart();render()}}
+function salvosView(){const L=D.orcamentos;return `<div class="head"><h1>Orçamentos salvos</h1></div><div class="panel tb">${L.length?`<table><thead><tr><th>Nº</th><th>Cliente</th><th>Local</th><th>Data</th><th>Itens</th><th class="n">Total</th><th></th></tr></thead><tbody>${L.map(o=>`<tr><td><b>#${esc(o.numero)}</b></td><td>${esc(o.cliente)}</td><td>${esc(o.local||"-")}</td><td>${esc(o.data)}</td><td>${o.itens.length}</td><td class="n">${brl(o.total)}</td><td class="ac"><button class="sm" data-a="simp" data-id="${o.id}">Imprimir</button> <button class="sm" data-a="sed" data-id="${o.id}">Editar</button> <button class="sm danger" data-a="sdel" data-id="${o.id}">Excluir</button></td></tr>`).join("")}</tbody></table>`:`<div class="vz">Nenhum orçamento salvo. Monte o primeiro em "Novo orçamento".</div>`}</div>`}
+function imprimir(o){const c=D.config;$("#imp").innerHTML=`<h2 style="text-align:center">${esc(c.empresa)} — Orçamento #${esc(o.numero)}</h2><p><b>Cliente / projeto:</b> ${esc(o.cliente)}<br><b>Local:</b> ${esc(o.local||"Não informado")}<br><b>Data:</b> ${esc(o.data)}</p>
+ <table><thead><tr><th>#</th><th>Produto</th><th>Medidas (L × A)</th><th>Qtd</th><th class="n">Preço unit.</th><th class="n">Total</th></tr></thead><tbody>${o.itens.map((i,n)=>`<tr><td>${n+1}</td><td>${thumb(i.produto,64)}${esc(i.produto)}${descItem(i)}</td><td>${nf(i.largura)} × ${nf(i.altura)} m</td><td>${i.quantidade}</td><td class="n">${brl(i.unitarioVenda)}</td><td class="n">${brl(i.total)}</td></tr>`).join("")}</tbody></table>
+ <h3 style="text-align:right">Total: ${brl(o.total)}</h3><p><b>Características:</b> ${esc(o.car||"Esquadrias de alumínio conforme especificações técnicas.")}</p><p><b>Pagamento:</b> ${esc(o.pag||"A combinar.")}</p><p><b>Entrega / instalação:</b> ${esc(o.ent||"No local indicado.")}</p><p>Orçamento válido por ${esc(c.validade)} dias.</p>`;aguardarImagens().then(()=>window.print())}
+function configView(){const c=D.config,f=(id,l,v,t="number")=>`<div class="field"><label for="${id}">${l}</label><input id="${id}" type="${t}" ${t==="number"?'step="any" inputmode="decimal"':""} value="${esc(v)}"></div>`;
+ return `<div class="head"><h1>Configurações</h1></div><div class="panel" style="max-width:520px">${f("g-empresa","Nome da empresa (cabeçalho do orçamento)",c.empresa,"text")}<p class="mu">O custo do perfil (R$/kg) agora é definido por cor, em Cadastros › Cores dos perfis.</p>${f("g-mkp","Fator de venda padrão (MKP)",c.mkp)}${f("g-validade","Validade do orçamento (dias)",c.validade)}${f("g-minKg","Peso mínimo (kg) de corte para criar cada tamanho de barra especial",c.minKg)}<p class="mu">As alterações são salvas ao sair do campo.</p></div>`}
+function dadosView(){return `<div class="head"><div><h1>Backup e migração</h1><p class="mu">Os dados ficam neste navegador, neste computador. Se você limpar o histórico do navegador, eles somem. Exporte um backup com frequência.</p></div></div>
+ <div class="panel"><button class="primary" data-a="exp">Exportar backup</button> <button data-a="imp">Importar backup</button><input id="arq" type="file" accept=".json,application/json" hidden>
+ <p class="mu">Aceita o backup deste sistema e o backup da versão anterior (os cadastros são separados automaticamente).</p></div>
+ ${D.relatorio&&D.relatorio.length?`<div class="panel"><h2>Ajustes feitos na migração — conferir</h2>${D.relatorio.map(r=>`<div class="wn">${esc(r)}</div>`).join("")}</div>`:""}`}
+
+const views={orcar:orcView,salvos:salvosView,perfis:()=>cadView("perfis"),acessorios:()=>cadView("acessorios"),vidros:()=>cadView("vidros"),produtos:prodView,config:configView,dados:dadosView};
+function render(){const r=(location.hash.replace(/^#\/?/,"")||"orcar").split("?")[0],n=views[r]?r:"orcar";
+ document.querySelectorAll(".side a").forEach(a=>a.getAttribute("href")==="#/"+n?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current"));
+ $("#tela").innerHTML=views[n]();const b=$("#busca");if(b)b.oninput=()=>{busca=b.value;const p=b.selectionStart;render();const x=$("#busca");x.focus();x.setSelectionRange(p,p)}}
+window.addEventListener("hashchange",()=>{busca="";render()});
+
+document.addEventListener("click",async e=>{const el=e.target.closest("[data-a]");if(!el)return;const a=el.dataset.a,id=el.dataset.id,k=el.dataset.k,i=+el.dataset.i,l=el.dataset.l,p=D.produtos.find(x=>x.id===prodSel);
+ if(a==="cnovo")cadEditar(k);else if(a==="ced")cadEditar(k,id);else if(a==="cdel")cadExcluir(k,id);
+ else if(a==="pnovo"){const n=await pedirNome("Novo produto");if(n){const q={id:uid(),nome:n,perfis:[],acessorios:[],vidros:[]};D.produtos.push(q);prodSel=q.id;salvar();render()}}
+ else if(a==="pren"&&p){const n=await pedirNome("Renomear produto",p.nome);if(n){p.nome=n;salvar();render()}}
+ else if(a==="pdel"&&p){if(await confirmar(`Excluir o produto "${p.nome}" e toda a sua composição?`,"Excluir produto")){D.produtos.splice(D.produtos.indexOf(p),1);salvar();render()}}
+ else if(a==="ladd"&&p){const m={perfis:[D.perfis,x=>({perfilId:x.id,desc:"",uso:"L",desconto:0,divisor:1,qtd:"1"})],acessorios:[D.acessorios,x=>({acId:x.id,qtd:"1"})],vidros:[D.vidros,x=>({vidroId:x.id,descL:0,divL:1,descA:0,divA:1,qtd:"1"})]}[l];
+  if(!m[0].length){aviso("Cadastre o item no menu Cadastros primeiro.",1);return}p[l].push(m[1](m[0][0]));salvar();render()}
+ else if(a==="ldel"&&p){p[l].splice(i,1);salvar();render()}
+ else if(a==="oadd"){const c=calcF();if(!c.p){aviso("Cadastre um produto primeiro.",1);return}if(c.l<=0||c.a<=0){aviso("Informe largura e altura válidas.",1);return}
+  Cart.itens.push({produto:c.p.nome,largura:c.l,altura:c.a,quantidade:c.q,mkp:c.m,custoUnit:c.u,unitarioVenda:c.uv,total:c.uv*c.q,av:c.av,corId:c.cor?c.cor.id:"",corNome:c.cor?c.cor.nome:"",custoKgCor:c.cor?c.cor.custoKg:null,vidroId:Cart.f.v||"",vidroNome:c.vd?c.vd.tipo:""});render()}
+ else if(a==="orem"){Cart.itens.splice(i,1);render()}
+ else if(a==="olimpar"){if(await confirmar("Remover todos os itens da lista?","Limpar lista")){Cart.itens=[];render()}}
+ else if(a==="osalvar")salvarOrc();else if(a==="ocancel"){resetCart();render()}
+ else if(a==="simp")imprimir(D.orcamentos.find(o=>o.id===id));
+ else if(a==="sed"){const o=D.orcamentos.find(x=>x.id===id);Object.assign(Cart,{itens:JSON.parse(JSON.stringify(o.itens)),edit:o.id,num:o.numero,cliente:o.cliente,local:o.local||"",car:o.car||"",pag:o.pag||"",ent:o.ent||"",dataOrig:o.data});location.hash="#/orcar"}
+ else if(a==="sdel"){const o=D.orcamentos.find(x=>x.id===id);if(await confirmar(`Excluir o orçamento #${o.numero} de ${o.cliente}?`,"Excluir orçamento")){D.orcamentos.splice(D.orcamentos.indexOf(o),1);salvar();render()}}
+ else if(a==="exp"){await exportarBackup()}
+ else if(a==="imp")$("#arq").click()});
+document.addEventListener("input",e=>{const t=e.target,C=Cart;
+ if(t.id.startsWith("o-")){C.f[t.id[2]]=t.value;$("#prev").innerHTML=prevHTML()}
+ else if(t.id.startsWith("c-"))C[t.id.slice(2)==="num"?"num":t.id.slice(2)]=t.value;
+ else if(t.id.startsWith("g-")){const k=t.id.slice(2),v=k==="empresa"?t.value:parseFloat(t.value);if(k==="empresa"||v>=0){D.config[k]=v;salvar()}}});
+document.addEventListener("change",async e=>{const t=e.target;
+ if(t.id==="psel"){prodSel=t.value;render()}
+ else if(t.id==="o-p"){Cart.f.p=t.value;$("#prev").innerHTML=prevHTML()}
+ else if(t.dataset.l){const p=D.produtos.find(x=>x.id===prodSel),x=p[t.dataset.l][+t.dataset.i],k=t.dataset.k;x[k]=t.type==="number"?(parseFloat(t.value)||0):t.value;if(k==="divisor"||k==="divL"||k==="divA")x[k]=x[k]||1;salvar();render()}
+ else if(t.dataset.k&&t.dataset.i&&Cart.itens[+t.dataset.i]){const it=Cart.itens[+t.dataset.i],v=parseFloat(t.value);
+  if(t.dataset.k==="quantidade")it.quantidade=Math.max(1,Math.round(v)||1);else it.mkp=v>0?v:1;
+  it.unitarioVenda=Math.round(it.custoUnit*it.mkp*100)/100;it.total=it.unitarioVenda*it.quantidade;render()}
+ else if(t.id==="arq"&&t.files[0]){const f=t.files[0];t.value="";try{const o=JSON.parse(await f.text()),d=migrar(o);
+  if(await confirmar("Importar este backup substitui todos os dados atuais. Continuar?","Substituir dados")){await prepararImagensImportadas(d);D=d;if(salvar()){aviso("Backup importado.");await carregarImagens();render()}}}catch(x){aviso("Arquivo inválido. Escolha um backup do SmartPAV.",1)}}});
+let Fonte="cart";const Modo={corte:"perfil",acess:"consol",vidros:"consol",barras:"cad"};const REF=10,SERRA=4;
+function fonte(){const o=Fonte==="cart"?null:D.orcamentos.find(x=>x.id===Fonte);if(o)return{it:o.itens,n:o.numero,c:o.cliente,l:o.local||"Não informado"};return{it:Cart.itens,n:Cart.num||"S/N",c:Cart.cliente||"Não informado",l:Cart.local||"Não informado"}}
+function linhas(it){const p=D.produtos.find(x=>x.nome===it.produto),l=it.largura,a=it.altura,q=it.quantidade,r={pf:[],ac:[],vd:[]};if(!p)return r;
+ p.perfis.forEach(x=>{const c=gP(x.perfilId);if(!c)return;const m=((x.uso==="L"?l:a)-(+x.desconto||0))/(+x.divisor||1),qu=qi(ev(x.qtd,l,a).v),qt=qu*q;if(qt>0&&m>0)r.pf.push({c,d:x.desc||"",m,qu,qt,cor:corItem(it)})});
+ p.acessorios.forEach(x=>{const c=gA(x.acId);if(!c)return;const qu=ev(x.qtd,l,a).v;if(qu>0)r.ac.push({c,qu,qt:qu*q})});
+ p.vidros.forEach(x=>{const c=gV(it.vidroId||x.vidroId);if(!c)return;const w=(l-(+x.descL||0))/(+x.divL||1),h=(a-(+x.descA||0))/(+x.divA||1),qu=qi(ev(x.qtd,l,a).v);if(w>0&&h>0&&qu>0)r.vd.push({c,w,h,qu,qt:qu*q,ar:w*h*qu*q})});return r}
+const tbl=(h,r)=>`<div class="tb"><table><thead><tr>${h.map(x=>`<th class="${x[0]==="~"?"n":""}">${x.replace("~","")}</th>`).join("")}</tr></thead><tbody>${r.map(c=>`<tr>${c.map((v,i)=>`<td class="${h[i][0]==="~"?"n":""}">${v}</td>`).join("")}</tr>`).join("")||`<tr><td colspan="${h.length}" class="vz">Sem itens.</td></tr>`}</tbody></table></div>`;
+function cab(t,f){return `<h2>${esc(D.config.empresa)} — ${t}</h2><p><b>Orçamento:</b> #${esc(f.n)} · <b>Cliente:</b> ${esc(f.c)} · <b>Local:</b> ${esc(f.l)}</p>`}
+function seg(k){const o={corte:[["perfil","Por perfil"],["esq","Por esquadria"]],acess:[["consol","Consolidado"],["esq","Por esquadria"]],vidros:[["consol","Consolidado"],["esq","Por esquadria"]],barras:[["cad","Usar barras do cadastro"],["auto","Otimizar todas (4200–6050)"]]}[k];return `<span class="seg">${o.map(x=>`<button class="sm ${Modo[k]===x[0]?"on":""}" data-a="fm" data-k="${k}" data-v="${x[0]}">${x[1]}</button>`).join("")}</span>`}
+function prodTela(t,corpo,k){const f=fonte();return `<div class="head"><h1>${t}</h1><div>${k?seg(k):""}<button class="primary" data-a="pr">Imprimir / salvar PDF</button></div></div>
+ <div class="field"><label for="fonte">Orçamento</label><select id="fonte" style="max-width:420px"><option value="cart" ${Fonte==="cart"?"selected":""}>Em andamento (${Cart.itens.length} item(ns))</option>${D.orcamentos.map(o=>`<option value="${o.id}" ${Fonte===o.id?"selected":""}>#${esc(o.numero)} — ${esc(o.cliente)}</option>`).join("")}</select></div>
+ ${f.it.length?`<div class="panel doc">${cab(t,f)}${corpo(f)}</div>`:`<div class="panel vz">Nenhum item neste orçamento. Monte a lista em "Novo orçamento" ou escolha um orçamento salvo.</div>`}`}
+function itemHd(i,x){return `<h2>Item ${i+1}: ${esc(x.produto)} — ${nf(x.largura)} × ${nf(x.altura)} m · ${x.quantidade} un.${txtItem(x)}</h2>`}
+function perfisCons(its){const m={};its.forEach(x=>linhas(x).pf.forEach(l=>{const k=l.c.id+l.cor.id+l.m.toFixed(3);(m[k]=m[k]||{c:l.c,d:l.d,m:l.m,qt:0,cor:l.cor}).qt+=l.qt}));return Object.values(m)}
+function vTela(){return prodTela("Plano de corte",f=>Modo.corte==="perfil"?tbl(["Código","Descrição","Cor","~Medida (m)","~Peças","~kg/m","~Peso total (kg)"],perfisCons(f.it).map(x=>[`${thumbPerfil(x.c,42)}<b>${esc(x.c.codigo)}</b>`,esc(x.d),esc(x.cor.nome),nf(x.m),x.qt,nf(x.c.peso),nf(x.m*x.qt*x.c.peso)])):f.it.map((x,i)=>itemHd(i,x)+tbl(["Código","Descrição","~Medida (m)","~Qtd por esquadria","~Qtd total"],linhas(x).pf.map(l=>[`${thumbPerfil(l.c,48)}<b>${esc(l.c.codigo)}</b>`,esc(l.d),nf(l.m),nf(l.qu,0),l.qt]))).join(""),"corte")}
+function acCons(its){const m={};its.forEach(x=>linhas(x).ac.forEach(l=>{(m[l.c.id]=m[l.c.id]||{c:l.c,qt:0}).qt+=l.qt}));return Object.values(m)}
+function vdCons(its){const m={};its.forEach(x=>linhas(x).vd.forEach(l=>{(m[l.c.id]=m[l.c.id]||{c:l.c,ar:0}).ar+=l.ar}));return Object.values(m)}
+function vAcess(){return prodTela("Relação de acessórios",f=>Modo.acess==="consol"?tbl(["Código","Descrição","~Qtd total","~Custo unit.","~Custo total"],acCons(f.it).map(x=>[esc(x.c.codigo),`<b>${esc(x.c.desc)}</b>`,nf(x.qt,2),brl(x.c.custo),brl(x.qt*x.c.custo)])):f.it.map((x,i)=>itemHd(i,x)+tbl(["Código","Descrição","~Qtd por esquadria","~Qtd total"],linhas(x).ac.map(l=>[esc(l.c.codigo),`<b>${esc(l.c.desc)}</b>`,nf(l.qu,2),nf(l.qt,2)]))).join(""),"acess")}
+function vVidros(){return prodTela("Relação de vidros",f=>Modo.vidros==="consol"?tbl(["Tipo","~Área total (m²)","~Custo/m²","~Custo total"],vdCons(f.it).map(x=>[`<b>${esc(x.c.tipo)}</b>`,nf(x.ar,2),brl(x.c.custo),brl(x.ar*x.c.custo)])):f.it.map((x,i)=>itemHd(i,x)+tbl(["Tipo","Medida (L × A)","~Peças por esquadria","~Peças totais","~Área (m²)"],linhas(x).vd.map(l=>[`<b>${esc(l.c.tipo)}</b>`,nf(l.w)+" × "+nf(l.h)+" m",nf(l.qu,0),nf(l.qt,0),nf(l.ar,2)]))).join(""),"vidros")}
+const Esp={};
+function ffd(dem,t){const bs=[];[...dem].sort((a,b)=>b-a).forEach(c=>{const b=bs.find(x=>x.u+c+SERRA<=t);if(b){b.cuts.push(c);b.u+=c+SERRA}else bs.push({cuts:[c],u:REF+c+SERRA,t})});return bs}
+function melhor(dem){const mx=Math.max(...dem);let best=null,bs=Infinity;for(let t=4200;t<=6050;t+=50){if(t<mx+REF+SERRA&&t<6050)continue;const b=ffd(dem,t),sc=b.length*1e5+b.reduce((s,x)=>s+t-x.u,0);if(sc<bs){bs=sc;best=b}}return best}
+function otim(dem){const b=melhor(dem),boas=[],sob=[];b.forEach(x=>(x.t-x.u>500?sob.push(...x.cuts):boas.push(x)));return sob.length?[...boas,...melhor(sob)]:b}
+function multi(dem,peso,C){const mk=D.config.minKg,mx=Math.max(...dem),kgOf=b=>b.cuts.reduce((s,c)=>s+c,0)/1000*peso,nec=b=>Math.min(6050,Math.max(4200,Math.ceil(b.u/50)*50));let best=null,bl=Infinity;
+ for(let t=4200;t<=6050;t+=50){if(t<mx+REF+SERRA&&t<6050)continue;const bs=ffd(dem,t);bs.forEach(b=>{b.n=nec(b)});
+  const ns=[...new Set(bs.map(b=>b.n))].sort((a,b)=>a-b),k=ns.length,pre=[0];ns.forEach(s=>pre.push(pre[pre.length-1]+bs.filter(b=>b.n===s).length));
+  const dp=Array.from({length:6},()=>Array(k+1).fill(Infinity)),pv=Array.from({length:6},()=>Array(k+1).fill(0));dp[0][0]=0;
+  for(let g=1;g<=5;g++)for(let j=1;j<=k;j++)for(let i=0;i<j;i++){const c=dp[g-1][i]+(pre[j]-pre[i])*ns[j-1];if(c<dp[g][j]){dp[g][j]=c;pv[g][j]=i}}
+  let bg=1;for(let g=2;g<=5;g++)if(dp[g][k]<dp[bg][k])bg=g;
+  const mp={};{let j=k,g=bg;while(g>0){const i=pv[g][j];for(let x=i;x<j;x++)mp[ns[x]]=ns[j-1];j=i;g--}}
+  bs.forEach(b=>{b.t=mp[b.n]});const low=[];
+  for(let it=0;it<12;it++){const kg={};bs.forEach(b=>{kg[b.t]=(kg[b.t]||0)+kgOf(b)});
+   const ruins=Object.keys(kg).map(Number).filter(s=>s!==C&&kg[s]<mk&&!low.includes(s)).sort((a,b)=>kg[a]-kg[b]);if(!ruins.length)break;
+   const s=ruins[0],ok=[...new Set([...Object.keys(kg).map(Number).filter(z=>z!==s&&kg[z]>=mk),C])].sort((a,b)=>a-b);
+   bs.filter(b=>b.t===s).forEach(b=>{const n=nec(b),z=ok.find(v=>v>=n);if(z)b.t=z});
+   if(bs.some(b=>b.t===s))low.push(s)}
+  if(new Set(bs.map(b=>b.t)).size>5)continue;const tot=bs.reduce((s,b)=>s+b.t,0);
+  if(tot<bl){bl=tot;best=bs.map(b=>({cuts:b.cuts,u:b.u,t:b.t}));best.lowSizes=low.filter(s=>bs.some(b=>b.t===s))}}
+ return best||ffd(dem,C)}
+function planoBarras(its){const m={};its.forEach(x=>linhas(x).pf.forEach(l=>{const k=l.c.id+"|"+l.cor.id,e=m[k]=m[k]||{c:l.c,d:l.d,cuts:[],cor:l.cor,k};for(let i=0;i<l.qt;i++)e.cuts.push(Math.round(l.m*1000))}));
+ return Object.values(m).map(e=>{const ku=e.cuts.reduce((s,c)=>s+c,0)/1000*e.c.peso;let modo=Modo.barras,bars,abaixo=false;
+  if(Esp[e.k]&&ku>=D.config.minKg){bars=multi(e.cuts,e.c.peso,e.c.barra||6050);modo="esp"}
+  else{if(Esp[e.k])abaixo=true;bars=Modo.barras==="cad"?ffd(e.cuts,e.c.barra||6050):otim(e.cuts)}
+  const kc=bars.reduce((s,b)=>s+b.t,0)/1000*e.c.peso;return Object.assign(e,{kg:e.cor.custoKg,baixo:bars.lowSizes||[],bars,ku,kc,ks:kc-ku,pp:kc?(kc-ku)/kc*100:0,modo,abaixo})})}
+function vBarras(){return prodTela("Otimização de barras",f=>{const pl=planoBarras(f.it);return `<p class="mu">Refilo ${REF} mm · serra ${SERRA} mm · otimização automática de 4200 a 6050 mm (passo 50) · perfil específico: até 5 tamanhos; cada tamanho novo exige ${nf(D.config.minKg,0)} kg de corte, e o que sobrar vai para o menor tamanho já escolhido ou para a barra do cadastro.</p>`+pl.map(e=>{
+ const g={};e.bars.forEach(b=>{const k=b.t+"_"+[...b.cuts].sort((a,c)=>a-c).join("_");(g[k]=g[k]||{t:b.t,cuts:[...b.cuts].sort((a,c)=>a-c),u:b.u,n:0}).n++});
+ const mx=Math.max(...e.cuts),al=e.modo!=="esp"&&e.pp>10&&e.ks>e.bars[0].t/1000*e.c.peso*3&&e.ku>=D.config.minKg?`<div class="wn">⚠ Perda de ${nf(e.ks,1)} kg (${nf(e.pp,1)}%). Use "Otimizar este perfil" para até 5 tamanhos de barra. Economia estimada: ${brl(e.ks*e.kg)}.</div>`:"";
+ const exc=e.bars.some(b=>b.u>b.t)?`<div class="wn">⚠ Há peça maior que a barra neste perfil.</div>`:"",ab=e.abaixo?`<div class="wn">⚠ Este perfil tem ${nf(e.ku,1)} kg de corte, abaixo do mínimo de ${nf(D.config.minKg,0)} kg para tamanhos especiais. Usando o modo geral.</div>`:"";
+ const lb=e.modo==="esp"?"até 5 tamanhos":e.modo==="cad"?"barra do cadastro "+(e.c.barra||6050)+" mm":"automático",tam=[...new Set(e.bars.map(b=>b.t))].sort((a,b)=>a-b);
+ return `<h2>${thumbPerfil(e.c,52)}${esc(e.c.codigo)} <span class="mu">${esc(e.d)} · ${esc(e.cor.nome)}</span> — ${e.bars.length} barra(s) · perda ${nf(e.pp,1)}% · ${nf(e.ku,1)} kg <span class="mu">(${lb}${e.modo==="esp"?": "+tam.join(", ")+" mm":""})</span> <button class="sm np" data-a="esp" data-id="${e.k}">${Esp[e.k]?"Voltar ao modo geral":"Otimizar este perfil (até 5 tamanhos)"}</button></h2>${al}${exc}${ab}${(e.baixo||[]).length?`<div class="wn">⚠ Tamanho(s) ${e.baixo.join(", ")} mm abaixo do mínimo de ${nf(D.config.minKg,0)} kg: não há barra maior para absorver essas peças.</div>`:""}`+tbl(["~Qtd","~Barra","Composição dos cortes (mm)","~Sobra","~Aproveitamento"],Object.values(g).map(b=>{const so=b.t-b.u,ap=(b.u-REF-b.cuts.length*SERRA)/b.t*100;return [b.n+" un.",b.t+" mm",`<span class="bd">refilo ${REF}</span>`+b.cuts.map(c=>`<span class="bd">${c}</span>`).join(""),(so<0?'<b class="wn">':"<b>")+so+" mm</b>",nf(ap,1)+"%"]}))}).join("")||`<div class="vz">Nenhum perfil para otimizar.</div>`},"barras")}
+function vCompras(){return prodTela("Lista de compras",f=>{const pl=planoBarras(f.it),ac=acCons(f.it),vd=vdCons(f.it);let tot=0;
+ const rp=pl.map(e=>{const g={};e.bars.forEach(b=>g[b.t]=(g[b.t]||0)+1);const c=e.kc*e.kg;tot+=c;return [`${thumbPerfil(e.c,42)}<b>${esc(e.c.codigo)}</b> ${esc(e.d)} · ${esc(e.cor.nome)}`,Object.keys(g).map(t=>`${g[t]} × ${t} mm`).join(", "),nf(e.kc,1),brl(c)]});
+ const ra=ac.map(x=>{const c=x.qt*x.c.custo;tot+=c;return [esc(x.c.codigo),`<b>${esc(x.c.desc)}</b>`,nf(x.qt,2),brl(c)]}),rv=vd.map(x=>{const c=x.ar*x.c.custo;tot+=c;return [`<b>${esc(x.c.tipo)}</b>`,nf(x.ar,2)+" m²",brl(c)]});
+ return `<h2>Perfis (barras)</h2>`+tbl(["Perfil","Barras","~Peso (kg)","~Custo estimado"],rp)+`<h2>Vidros</h2>`+tbl(["Tipo","~Área","~Custo estimado"],rv)+`<h2>Acessórios</h2>`+tbl(["Código","Descrição","~Qtd","~Custo estimado"],ra)+`<h3 style="text-align:right">Total estimado de compra: ${brl(tot)}</h3>`})}
+function fichaHTML(i,f){const x=f.it[i],r=linhas(x);return `<div class="pb">${cab("Ficha de produção — chão de fábrica",f)}<div style="display:flex;gap:1rem;align-items:center">${thumb(x.produto,110)}<div>${itemHd(i,x)}</div></div><h2>1. Corte de perfis</h2>`+tbl(["Código","Descrição","~Medida (m)","~Qtd por esquadria","~Qtd total"],r.pf.map(l=>[`${thumbPerfil(l.c,48)}<b>${esc(l.c.codigo)}</b>`,esc(l.d),nf(l.m),nf(l.qu,0),l.qt]))+`<h2>2. Vidros</h2>`+tbl(["Tipo","Medida (L × A)","~Peças totais","~Área (m²)"],r.vd.map(l=>[`<b>${esc(l.c.tipo)}</b>`,nf(l.w)+" × "+nf(l.h)+" m",nf(l.qt,0),nf(l.ar,2)]))+`<h2>3. Acessórios e separação</h2>`+tbl(["Código","Descrição","~Qtd por esquadria","~Qtd total"],r.ac.map(l=>[esc(l.c.codigo),`<b>${esc(l.c.desc)}</b>`,nf(l.qu,2),nf(l.qt,2)]))+`</div>`}
+function vFichas(){const f=fonte();return `<div class="head"><h1>Fichas de produção</h1><button class="primary" data-a="fall">Imprimir todas as fichas</button></div>
+ <div class="field"><label for="fonte">Orçamento</label><select id="fonte" style="max-width:420px"><option value="cart" ${Fonte==="cart"?"selected":""}>Em andamento (${Cart.itens.length} item(ns))</option>${D.orcamentos.map(o=>`<option value="${o.id}" ${Fonte===o.id?"selected":""}>#${esc(o.numero)} — ${esc(o.cliente)}</option>`).join("")}</select></div>
+ <div class="panel tb">${f.it.length?tbl(["#","Produto","Medidas (L × A)","~Qtd",""],f.it.map((x,i)=>[i+1,`<b>${esc(x.produto)}</b>`,nf(x.largura)+" × "+nf(x.altura)+" m",x.quantidade,`<button class="sm" data-a="fch" data-i="${i}">Imprimir ficha</button>`])):`<div class="vz">Nenhum item neste orçamento.</div>`}</div>`}
+Object.assign(views,{"r-corte":vTela,"r-acess":vAcess,"r-vidros":vVidros,"r-barras":vBarras,"r-compras":vCompras,"r-fichas":vFichas});
+async function exportarBackup(){try{const d=JSON.parse(JSON.stringify(D));for(const p of d.perfis){if(p.imgKey){const rec=await obterImagem(p.imgKey);if(rec&&rec.blob){const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(rec.blob)});p.img=data}delete p.imgKey}}for(const p of d.produtos){delete p.img;if(p.imgKey){const rec=await obterImagem(p.imgKey);if(rec&&rec.blob){const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(rec.blob)});p.img=data}delete p.imgKey}}const b=new Blob([JSON.stringify(d,null,2)],{type:"application/json"}),x=document.createElement("a");x.href=URL.createObjectURL(b);x.download="smartpav_v2_backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(x);x.click();x.remove();setTimeout(()=>URL.revokeObjectURL(x.href),1000)}catch(e){aviso("Falha ao exportar o backup, inclusive imagens.",1)}}
+async function prepararImagensImportadas(d){for(const p of d.perfis||[]){if(p.img){const id=uid();await guardarImagem(id,await dataURLBlob(p.img));p.imgKey=id;delete p.img}}for(const p of d.perfis||[]){if(p.imgKey&&!IMG_URLS[p.imgKey]){const rec=await obterImagem(p.imgKey);if(rec&&rec.blob)IMG_URLS[p.imgKey]=URL.createObjectURL(rec.blob)}}for(const p of d.produtos){if(p.img){const id=uid();await guardarImagem(id,await dataURLBlob(p.img));p.imgKey=id;delete p.img}}for(const p of d.produtos){if(p.imgKey&&!IMG_URLS[p.imgKey]){const rec=await obterImagem(p.imgKey);if(rec&&rec.blob)IMG_URLS[p.imgKey]=URL.createObjectURL(rec.blob)}}}
+function aguardarImagens(){const m=$("#imp");return Promise.all([...m.querySelectorAll("img")].map(i=>i.complete&&i.naturalWidth?(i.decode?i.decode().catch(()=>{}):0):new Promise(r=>{i.onload=()=>{(i.decode?i.decode():Promise.resolve()).then(r,r)};i.onerror=r;setTimeout(r,4000)})))}
+function imprimirHTML(h){$("#imp").innerHTML=h;aguardarImagens().then(()=>window.print())}
+document.addEventListener("click",e=>{const el=e.target.closest("[data-a]");if(!el)return;const a=el.dataset.a;
+ if(a==="fm"){Modo[el.dataset.k]=el.dataset.v;render()}
+ else if(a==="pr"){const d=$("#tela .doc");if(d)imprimirHTML(d.innerHTML);else aviso("Não há itens para imprimir.",1)}
+ else if(a==="esp"){const e=planoBarras(fonte().it).find(x=>x.k===el.dataset.id);if(Esp[el.dataset.id]){delete Esp[el.dataset.id];render()}else if(e&&e.ku<D.config.minKg)aviso(`Este perfil tem ${nf(e.ku,1)} kg de corte. O mínimo para tamanhos especiais é ${nf(D.config.minKg,0)} kg (configurável).`,1);else{Esp[el.dataset.id]=1;render()}}
+ else if(a==="fch"){const f=fonte();imprimirHTML(fichaHTML(+el.dataset.i,f))}
+ else if(a==="fall"){const f=fonte();if(!f.it.length){aviso("Não há itens para imprimir.",1);return}imprimirHTML(f.it.map((x,i)=>fichaHTML(i,f)).join(""))}});
+document.addEventListener("change",e=>{if(e.target.id==="fonte"){Fonte=e.target.value;render()}});
+function thumb(n,s=44){const p=D.produtos.find(x=>x.nome===n),u=p&&p.imgKey?urlImagem(p.imgKey):"";return u?`<img src="${esc(u)}" alt="" style="width:${s}px;height:${s}px;object-fit:contain;vertical-align:middle;margin-right:.5rem;border-radius:6px;background:#fff">`:""}
+function reduzir(file,max=480){return new Promise((ok,er)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{try{let w=im.naturalWidth||300,h=im.naturalHeight||300;const s=Math.min(1,max/Math.max(w,h));w=Math.max(1,Math.round(w*s));h=Math.max(1,Math.round(h*s));const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");x.drawImage(im,0,0,w,h);let d=c.toDataURL("image/webp",.85);if(d.indexOf("data:image/webp")!==0){x.globalCompositeOperation="destination-over";x.fillStyle="#fff";x.fillRect(0,0,w,h);d=c.toDataURL("image/jpeg",.85)}URL.revokeObjectURL(u);ok(d)}catch(e){er(e)}};im.onerror=()=>{URL.revokeObjectURL(u);er(new Error("formato"))};im.src=u})}
+document.addEventListener("click",async e=>{const el=e.target.closest("[data-a]");if(!el)return;const a=el.dataset.a;
+ if(a==="pfimg")$("#pfimgf").click();
+ else if(a==="pfimgdel"){const r=cadPerfilR;if(r&&r.imgKey){const id=r.imgKey;await excluirImagem(id);if(IMG_URLS[id]){URL.revokeObjectURL(IMG_URLS[id]);delete IMG_URLS[id]}delete r.imgKey;const prev=$("#pfprev");if(prev)prev.innerHTML=`<span class="mu">Sem imagem</span>`;el.remove();salvar()}}
+ else if(a==="pimg")$("#pimgf").click();
+ else if(a==="pimgdel"){const p=D.produtos.find(x=>x.id===prodSel);if(p){const id=p.imgKey;if(id){await excluirImagem(id);if(IMG_URLS[id]){URL.revokeObjectURL(IMG_URLS[id]);delete IMG_URLS[id]}}delete p.img;delete p.imgKey;salvar();render()}}});
+document.addEventListener("change",async e=>{if(e.target.id!=="pfimgf"||!e.target.files[0])return;const f=e.target.files[0],id=cadPerfilImgId;e.target.value="";if(!id||!cadPerfilR)return;if(f.size>20e6){aviso("Arquivo muito grande (limite de 20 MB).",1);return}try{const data=await reduzir(f),blob=await dataURLBlob(data),r=cadPerfilR,key=r.imgKey||uid();await guardarImagem(key,blob);if(IMG_URLS[key])URL.revokeObjectURL(IMG_URLS[key]);IMG_URLS[key]=URL.createObjectURL(blob);if(r)r.imgKey=key;const prev=$("#pfprev");if(prev)prev.innerHTML=`<img src="${esc(IMG_URLS[key])}" style="max-width:100%;max-height:100%;object-fit:contain">`;const btn=document.querySelector("[data-a=pfimg]");if(btn)btn.textContent="Trocar imagem";if(!document.querySelector("[data-a=pfimgdel]")){const b=document.createElement("button");b.type="button";b.className="sm danger";b.dataset.a="pfimgdel";b.textContent="Remover";btn?.after(b)}salvar()}catch(x){aviso("Não foi possível salvar a imagem do perfil.",1)}return});
+document.addEventListener("change",async e=>{if(e.target.id!=="pimgf"||!e.target.files[0])return;const f=e.target.files[0],p=D.produtos.find(x=>x.id===prodSel);e.target.value="";if(!p)return;
+ if(f.size>20e6){aviso("Arquivo muito grande (limite de 20 MB). Reduza a imagem e tente de novo.",1);return}
+ try{const data=await reduzir(f),blob=await dataURLBlob(data),id=p.imgKey||uid();await guardarImagem(id,blob);if(IMG_URLS[id])URL.revokeObjectURL(IMG_URLS[id]);IMG_URLS[id]=URL.createObjectURL(blob);p.imgKey=id;delete p.img;if(salvar()){aviso("Imagem salva no IndexedDB.")}render()}catch(x){aviso("Não foi possível salvar a imagem no banco local. Tente novamente.",1)}});
+const BK={h:null,pend:false,t:null,max:15},BKID="__pasta_backup",ULT="smartpav:ultimoBackup";
+const backupOk=()=>typeof window.showDirectoryPicker==="function";
+const blobData=b=>new Promise((ok,er)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>er(r.error);r.readAsDataURL(b)});
+async function backupTexto(){const d=JSON.parse(JSON.stringify(D));for(const L of [d.perfis||[],d.produtos||[]])for(const p of L){delete p.img;if(p.imgKey){const rec=await obterImagem(p.imgKey);if(rec&&rec.blob)p.img=await blobData(rec.blob);delete p.imgKey}}return JSON.stringify(d,null,2)}
+const stamp=()=>{const d=new Date(),p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"_"+p(d.getHours())+"-"+p(d.getMinutes())+"-"+p(d.getSeconds())};
+exportarBackup=async function(){try{const t=await backupTexto(),b=new Blob([t],{type:"application/json"}),x=document.createElement("a");x.href=URL.createObjectURL(b);x.download="smartpav_v2_backup_"+stamp()+".json";document.body.appendChild(x);x.click();x.remove();setTimeout(()=>URL.revokeObjectURL(x.href),1000);localStorage.setItem(ULT,String(Date.now()));statusBk()}catch(e){aviso("Falha ao exportar o backup, inclusive imagens.",1)}};
+async function permissao(h,pedir){const o={mode:"readwrite"};if((await h.queryPermission(o))==="granted")return true;return pedir&&(await h.requestPermission(o))==="granted"}
+async function limparBk(){const L=[];for await(const [n] of BK.h.entries())if(/^smartpav_backup_.*\.json$/.test(n))L.push(n);L.sort();while(L.length>BK.max)await BK.h.removeEntry(L.shift())}
+async function gravarBackup(manual){if(!BK.h)return false;
+ try{if(!(await permissao(BK.h,manual))){BK.pend=true;statusBk();return false}
+  const t=await backupTexto(),n="smartpav_backup_"+stamp()+".json",f=await BK.h.getFileHandle(n,{create:true}),w=await f.createWritable();await w.write(t);await w.close();
+  localStorage.setItem(ULT,String(Date.now()));BK.pend=false;try{await limparBk()}catch(e){}statusBk();return n}
+ catch(e){BK.pend=true;statusBk();aviso("Não foi possível gravar o backup na pasta. Escolha a pasta de novo em Backup e migração.",1);return false}}
+function agendarBk(){if(!BK.h)return;clearTimeout(BK.t);BK.t=setTimeout(()=>gravarBackup(false),60000)}
+const _salvar=salvar;salvar=function(){const r=_salvar.apply(this,arguments);if(r)agendarBk();return r};
+function statusBk(){let b=$("#bkbar");if(!b||!b.id){b=document.createElement("div");b.id="bkbar";b.style.cssText="position:fixed;top:.8rem;right:1rem;z-index:30;display:none;gap:.6rem;align-items:center;background:var(--sf);color:var(--wn);border:1px solid var(--wn);border-radius:10px;padding:.4rem .7rem;font-size:.88rem";document.body.appendChild(b)}
+ const u=+localStorage.getItem(ULT)||0,dias=u?Math.floor((Date.now()-u)/864e5):null;let t="";
+ if(BK.h&&BK.pend)t='Backup automático pausado <button class="sm" data-a="bkativar">Ativar</button>';
+ else if(!BK.h&&(dias===null||dias>=7))t=(dias===null?"Nenhum backup feito":"Último backup há "+dias+" dias")+' · <a href="#/dados">Configurar</a>';
+ b.innerHTML=t;b.style.display=t?"flex":"none"}
+function painelBk(){const u=+localStorage.getItem(ULT)||0,dt=u?new Date(u).toLocaleString("pt-BR"):"nunca";
+ return `<div class="panel"><h2>Backup automático em pasta</h2>${!backupOk()?'<div class="wn">Este navegador não permite gravar em pasta. Use o Chrome ou o Edge.</div>':`<p class="mu">Escolha uma pasta, de preferência dentro do OneDrive ou Google Drive. O sistema grava uma cópia 1 minuto depois da última alteração e mantém as últimas ${BK.max}. Se o Chrome recusar a pasta, crie uma subpasta (ex.: Documentos\\SmartPAV Backup) e escolha ela.</p><p><b>Pasta:</b> ${BK.h?esc(BK.h.name):"não escolhida"} · <b>Último backup:</b> ${esc(dt)}${BK.pend?' · <span class="wn">pausado: clique em "Gravar agora" para reativar</span>':""}</p><button class="primary" data-a="bkpasta">${BK.h?"Trocar pasta":"Escolher pasta"}</button> ${BK.h?'<button data-a="bkagora">Gravar agora</button> <button class="danger" data-a="bkoff">Desativar</button>':""}`}</div>`}
+const _dv=views.dados;views.dados=()=>_dv()+painelBk();
+document.addEventListener("click",async e=>{const el=e.target.closest("[data-a]");if(!el)return;const a=el.dataset.a;
+ if(a==="bkpasta"){try{const h=await showDirectoryPicker({id:"smartpav-backup",mode:"readwrite",startIn:"documents"});BK.h=h;await imgTx("readwrite",s=>s.put({id:BKID,handle:h}));const n=await gravarBackup(true);if(n)aviso("Pasta definida. Backup gravado: "+n);render()}catch(x){if(x&&x.name!=="AbortError")aviso("O Chrome não aceitou esta pasta. Crie uma subpasta (ex.: Documentos\\SmartPAV Backup) e escolha ela.",1)}}
+ else if(a==="bkagora"||a==="bkativar"){const n=await gravarBackup(true);if(n)aviso("Backup gravado: "+n);render()}
+ else if(a==="bkoff"){try{await imgTx("readwrite",s=>s.delete(BKID))}catch(x){}clearTimeout(BK.t);BK.h=null;BK.pend=false;statusBk();aviso("Backup automático desativado.");render()}});
+(async()=>{try{for(let i=0;i<100&&!imgDb;i++)await new Promise(r=>setTimeout(r,50));const r=imgDb?await obterImagem(BKID):null;BK.h=r&&r.handle||null;if(BK.h&&!(await permissao(BK.h,false)))BK.pend=true}catch(e){}statusBk()})();
+CAD.cores={t:"Cores dos perfis",un:"acabamento",lista:()=>D.cores,campos:[["nome","Cor / acabamento","t"],["custoKg","Custo do perfil (R$/kg)","n"]],uso:(p,id)=>D.cores.length<=1||D.orcamentos.some(o=>o.itens.some(i=>i.corId===id))||Cart.itens.some(i=>i.corId===id)};
+views.cores=()=>cadView("cores");
+function garantirCores(d){if(!Array.isArray(d.cores)||!d.cores.length)d.cores=[{id:uid(),nome:"Padrão",custoKg:(d.config&&d.config.custoKg)||42}];return d}
+const _mig=migrar;migrar=function(o){return garantirCores(_mig(o))};garantirCores(D);
+function corItem(it){return D.cores.find(x=>x.id===it.corId)||D.cores.find(x=>x.nome===it.corNome)||D.cores[0]}
+function descItem(i){const c=i.corNome||(corItem(i)||{}).nome,v=i.vidroNome;return `<div class="mu">Cor: ${esc(c||"-")}${v?" · Vidro: "+esc(v):""}</div>`}
+function txtItem(i){const c=i.corNome||(corItem(i)||{}).nome,v=i.vidroNome;return " — Cor: "+esc(c||"-")+(v?" · Vidro: "+esc(v):"")}
+iniciar();
+</script>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script>
+</body>
+</html>

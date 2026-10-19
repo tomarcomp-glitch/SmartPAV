@@ -42,7 +42,7 @@ th{font-size:.82rem;color:var(--mu)}td.n,th.n{text-align:right;font-variant-nume
 dialog{border:1px solid var(--ln);border-radius:var(--r);background:var(--sf);color:var(--tx);padding:1.2rem;width:min(460px,92vw)}dialog::backdrop{background:rgba(0,0,0,.45)}
 .rd{display:flex;justify-content:flex-end;gap:.5rem;margin-top:1rem}
 #av{position:fixed;right:1rem;bottom:1rem;display:flex;flex-direction:column;gap:.5rem;z-index:20}.avs{background:var(--tx);color:var(--bg);padding:.6rem .9rem;border-radius:var(--r);max-width:340px}.avs.e{background:var(--dg);color:#fff}
-#imp{display:none}.pimg{width:270px;height:270px;border:1px solid var(--ln);border-radius:var(--r);display:grid;place-items:center;background:#fff;overflow:hidden;flex:none}.pimg img{max-width:100%;max-height:100%;object-fit:contain}.bd{display:inline-block;background:var(--as);border:1px solid var(--ln);border-radius:4px;padding:0 .35rem;margin:0 .15rem .15rem 0;font-variant-numeric:tabular-nums}.pb{break-after:page}.seg{display:inline-flex;gap:.3rem;margin-right:.5rem}.seg .on{background:var(--ac);color:var(--at);border-color:var(--ac)}@media print{#imp .bd{background:none;border:1px solid #000}#imp .np{display:none}}
+#imp{display:none}.pimg{width:270px;height:270px;border:1px solid var(--ln);border-radius:var(--r);display:grid;place-items:center;background:#fff;overflow:hidden;flex:none}.pimg img{max-width:100%;max-height:100%;object-fit:contain}.bd{display:inline-block;background:var(--as);border:1px solid var(--ln);border-radius:4px;padding:0 .35rem;margin:0 .15rem .15rem 0;font-variant-numeric:tabular-nums}.pb{break-after:page}.seg{display:inline-flex;gap:.3rem;margin-right:.5rem}.seg .on{background:var(--ac);color:var(--at);border-color:var(--ac)}@media print{html:not([data-imp=tema]) #imp .bd{background:none;border:1px solid #000}#imp .np{display:none}}
 .tcp{table-layout:fixed;min-width:880px}.tcp td{vertical-align:middle}
 .pfc{display:flex;align-items:center;gap:.5rem}.pft{flex:none;width:56px;height:56px;border:1px solid var(--ln);border-radius:var(--r);background:#fff;display:grid;place-items:center;overflow:hidden;color:#8a939c}.pft img{max-width:100%;max-height:100%;object-fit:contain}
 .tcp select[data-k=uso]{text-align:center;font-weight:600}
@@ -74,7 +74,7 @@ main.full{max-width:none}
 .pal[aria-pressed=true]{border-color:var(--ac);box-shadow:inset 0 0 0 1px var(--ac);font-weight:600}
 @media (prefers-reduced-motion:reduce){.tile{transition:none}}
 @media (max-width:760px){.og{grid-template-columns:repeat(2,minmax(0,1fr))}.og .field.pw{grid-column:1/-1}.ofm{flex-direction:column}.of .pimg{width:80px;height:80px}.ofb{width:100%}.app{grid-template-columns:1fr}.side{border-right:0;border-bottom:1px solid var(--ln);display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}.side .brand,.side .grp{width:100%;padding:.2rem .4rem}.side a{display:inline-block}.side a.ini{display:inline-flex}main{padding:1rem}.tiles{grid-template-columns:repeat(2,1fr)}}
-@media print{.app,#av,dialog,#bkbar{display:none!important}html,body{background:#fff!important}#imp{display:block;color:#000;background:#fff;--bg:#fff;--sf:#fff;--tx:#000;--mu:#444;--ln:#999;--as:#eee}#imp table{font-size:12px}tr{break-inside:avoid}@page{size:A4;margin:12mm}}
+@media print{.app,#av,dialog,#bkbar{display:none!important}html,body{background:#fff!important}#imp{display:block;color:#000;background:#fff}html:not([data-imp=tema]) #imp{--bg:#fff;--sf:#fff;--tx:#000;--mu:#444;--ln:#999;--as:#eee}html[data-imp=tema],html[data-imp=tema] *{-webkit-print-color-adjust:exact;print-color-adjust:exact}html[data-imp=tema],html[data-imp=tema] body{background:var(--bg)!important}html[data-imp=tema] #imp{color:var(--tx);background:var(--bg)}#imp table{font-size:12px}tr{break-inside:avoid}@page{size:A4;margin:12mm}}
 </style>
 </head>
 <body>
@@ -447,17 +447,18 @@ function varsTema(p,d){
   :{bg:hs(h,s*.3,94.5),sf:"#fff",tx:hs(h,s*.5,13),mu:hs(h,s*.2,40),ln:hs(h,s*.25,85),ac:hs(h,s,30),at:"#fff",as:hs(h,s*.8,92),dg:"#b3261e",ok:"#1e7a46",wn:"#8a5a00"}}
 const escuroAtivo=()=>AP.modo==="escuro"||(AP.modo==="auto"&&mqE.matches);
 function aplicarAparencia(){const d=escuroAtivo(),p=PAL.find(x=>x.id===AP.pal)||PAL[0],v=varsTema(p,d),r=document.documentElement;
- for(const k in v)r.style.setProperty("--"+k,v[k]);r.style.colorScheme=d?"dark":"light";r.dataset.theme=d?"dark":"light";
+ for(const k in v)r.style.setProperty("--"+k,v[k]);r.style.colorScheme=d?"dark":"light";r.dataset.theme=d?"dark":"light";r.dataset.imp=AP.imp==="claro"?"claro":"tema";let pg=document.getElementById("pgbg");if(!pg){pg=document.createElement("style");pg.id="pgbg";document.head.appendChild(pg)}pg.textContent=AP.imp==="claro"?"":"@media print{@page{background:"+v.bg+"}}";
  const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",d?v.sf:v.ac)}
 if(mqE.addEventListener)mqE.addEventListener("change",()=>{if(AP.modo==="auto")aplicarAparencia()});
 aplicarAparencia();
 function apView(){const d=escuroAtivo(),md=[["auto","Automático"],["claro","Claro"],["escuro","Escuro"]];
  return `<div class="panel" style="max-width:520px"><h2>Aparência</h2><div class="field"><label>Tema</label><span class="seg">${md.map(x=>`<button class="sm ${AP.modo===x[0]?"on":""}" data-a="apm" data-v="${x[0]}" aria-pressed="${AP.modo===x[0]}">${x[1]}</button>`).join("")}</span></div>
  <div class="field"><label>Cor do aplicativo</label><div class="pals">${PAL.map(p=>`<button class="pal" data-a="app" data-v="${p.id}" aria-pressed="${AP.pal===p.id}"><i style="background:${varsTema(p,d).ac}"></i>${esc(p.n)}</button>`).join("")}</div></div>
+ <div class="field"><label>Impressão e PDF</label><span class="seg">${[["tema","Seguir o tema"],["claro","Sempre claro (economiza tinta)"]].map(x=>`<button class="sm ${(AP.imp||"tema")===x[0]?"on":""}" data-a="api" data-v="${x[0]}" aria-pressed="${(AP.imp||"tema")===x[0]}">${x[1]}</button>`).join("")}</span></div>
  <p class="mu">Vale para este navegador e não entra no backup.</p></div>`}
 const _cv=views.config;views.config=()=>_cv()+apView();
 document.addEventListener("click",e=>{const el=e.target.closest("[data-a]");if(!el)return;const a=el.dataset.a;
- if(a==="apm"||a==="app"){if(a==="apm")AP.modo=el.dataset.v;else AP.pal=el.dataset.v;try{localStorage.setItem(APK,JSON.stringify(AP))}catch(x){}aplicarAparencia();render()}});
+ if(a==="apm"||a==="app"||a==="api"){if(a==="apm")AP.modo=el.dataset.v;else if(a==="app")AP.pal=el.dataset.v;else AP.imp=el.dataset.v;try{localStorage.setItem(APK,JSON.stringify(AP))}catch(x){}aplicarAparencia();render()}});
 iniciar();
 </script>
 <script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script>

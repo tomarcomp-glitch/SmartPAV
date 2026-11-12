@@ -213,19 +213,33 @@ function limHTML(p){const q=limP(p);
  const c=(k,l)=>`<input data-lim="${k}" type="number" step="any" min="0" inputmode="decimal" aria-label="${l}" value="${q[k]==null?"":esc(q[k])}">`;
  const row=(k,n,r)=>`<div class="lr">${n}${r?" *":""}</div>${c(k+"Min",n+" mínima")}${c(k+"Max",n+" máxima")}${c(k+"Pad",n+" padrão")}`;
  return `<div class="lg"><div></div><div class="lh">Mínimo (m)</div><div class="lh">Máximo (m)</div><div class="lh">Padrão (m)</div>${row("a","Altura",1)}${row("l","Largura",1)}${row("b","Altura da báscula")}${row("p","Altura do peitoril")}</div><div id="lim-av">${limFalta(p)}</div><p class="mu">* Obrigatórios (mínimo, máximo e padrão). Báscula e peitoril: deixe mínimo e máximo em branco se o produto não tiver; os campos somem do orçamento (nada já cadastrado é apagado). Medidas fora dos limites pedem a confirmação "CONCORDO" ao adicionar o item.</p>`}
-let prodSel=null;
+let prodSel=null,Rasc=null;
+function prodRasc(){const o=D.produtos.find(x=>x.id===prodSel);if(!o){Rasc=null;return null}
+ if(!Rasc||Rasc.id!==prodSel){const c=JSON.parse(JSON.stringify(o));Rasc={id:prodSel,obj:c,snap:JSON.stringify(c)}}return Rasc.obj}
+const prodSujo=()=>!!Rasc&&D.produtos.some(x=>x.id===Rasc.id)&&JSON.stringify(Rasc.obj)!==Rasc.snap;
+function marcarSujo(){const e=$("#sujo");if(e)e.textContent=prodSujo()?"● Alterações não salvas":""}
+function salvarFicha(){if(!Rasc)return true;const o=Rasc.obj,i=D.produtos.findIndex(x=>x.id===Rasc.id);if(i<0)return true;
+ const f=limFalta(o);if(f){aviso("Não foi possível salvar: preencha as medidas obrigatórias (altura e largura: mínimo, máximo e padrão).",1);return false}
+ const q=o.lim||{},inv=[["aMin","aMax","Altura"],["lMin","lMax","Largura"],["bMin","bMax","Altura da báscula"],["pMin","pMax","Altura do peitoril"]].filter(x=>limN(q[x[0]])!==null&&limN(q[x[1]])!==null&&q[x[0]]>q[x[1]]);
+ if(inv.length){aviso("Não foi possível salvar: "+inv[0][2]+" com mínimo maior que o máximo.",1);return false}
+ D.produtos[i]=JSON.parse(JSON.stringify(o));if(!salvar())return false;
+ Rasc.snap=JSON.stringify(o);aviso("Ficha técnica salva.");return true}
+function confirmarSaidaProd(){return new Promise(r=>{if(!prodSujo()){r(true);return}
+ abrir(`<h2>Alterações não salvas</h2><p>Foram feitas alterações na ficha técnica deste produto. Deseja salvar?</p><div class="rd"><button id="fn">Não</button><button class="primary" id="fs">Sim</button></div>`);
+ $("#fn").onclick=()=>{fechar();Rasc=null;r(true)};$("#fs").onclick=()=>{fechar();r(salvarFicha())};dlg.oncancel=()=>r(false)})}
 function selOpt(L,v,f){return L.map(x=>`<option value="${x.id}" ${x.id===v?"selected":""}>${esc(f(x))}</option>`).join("")}
-function prodView(){const P=D.produtos;if(!P.find(p=>p.id===prodSel))prodSel=P[0]?.id;const p=P.find(x=>x.id===prodSel);
+function prodView(){const P=D.produtos;if(!P.find(p=>p.id===prodSel))prodSel=P[0]?.id;const p=prodRasc();
  const ip=(l,i,k,v,t="number")=>`<input data-l="${l}" data-i="${i}" data-k="${k}" type="${t}" ${t==="number"?'step="any" inputmode="decimal"':""} value="${esc(v)}">`;
- let h=`<div class="head"><h1>Composição dos produtos</h1><div><button class="primary" data-a="pnovo">Novo produto</button></div></div>
+ let h=`<div class="head"><h1>Composição dos produtos</h1><div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap"><span id="sujo" class="wn">${prodSujo()?"● Alterações não salvas":""}</span>${p?'<button class="primary" data-a="psalvar">Salvar ficha técnica</button>':""}<button data-a="pnovo">Novo produto</button></div></div>
  <p class="mu">Fórmulas de quantidade: <b>l</b>, <b>a</b>, <b>p</b> e <b>b</b> = largura, altura, peitoril e báscula em metros; <b>L</b>, <b>A</b>, <b>P</b> e <b>B</b> = em milímetros quando a fórmula tem <code>/1000</code>; sem <code>/1000</code>, valem como metros. Aceita vírgula ou ponto decimal. Ex.: <code>a / 0.071</code>, <code>((L-60)/2*4)/1000</code>.</p>
- <div class="field"><label for="psel">Produto</label><select id="psel" style="max-width:420px">${selOpt(P,prodSel,x=>x.nome)}</select></div>`;
+ <div class="field"><label for="psel">Produto</label><select id="psel" style="max-width:420px">${selOpt(P,prodSel,x=>x.id===prodSel&&p?p.nome:x.nome)}</select></div>`;
  if(!p)return h+`<div class="vz">Nenhum produto. Crie o primeiro.</div>`;
  h+=`<div class="rd" style="justify-content:flex-start"><button class="sm" data-a="pren">Renomear</button><button class="sm danger" data-a="pdel">Excluir produto</button></div>
  <div class="panel" style="display:flex;gap:1.2rem;align-items:flex-start;flex-wrap:wrap"><div style="display:flex;flex-direction:column;gap:.6rem;width:270px;max-width:100%"><div class="pimg">${p.imgKey&&urlImagem(p.imgKey)?`<img src="${esc(urlImagem(p.imgKey))}" alt="Imagem de ${esc(p.nome)}">`:'<span class="mu">Sem imagem</span>'}</div><div><button class="sm" data-a="pimg">${p.imgKey?"Trocar imagem":"Adicionar imagem"}</button> ${p.imgKey?'<button class="sm danger" data-a="pimgdel">Remover imagem</button>':""}<input id="pimgf" type="file" accept="image/*" hidden></div><p class="mu" style="font-size:.78rem;margin:0">Aceita PNG, JPG, WebP, GIF ou SVG (reduzida sozinha para até 480 px). Ideal: a partir de 600 px de largura, fundo transparente ou branco.</p></div><div style="flex:1;min-width:300px"><h2>Medidas do produto</h2>${limHTML(p)}</div></div>
  <div class="panel tb"><h2>Perfis</h2><datalist id="dl-perfis">${D.perfis.map(c=>`<option value="${esc(c.codigo)}"></option>`).join("")}</datalist><table class="tcp"><colgroup><col style="width:240px"><col><col style="width:90px"><col style="width:130px"><col style="width:64px"><col style="width:150px"><col style="width:100px"></colgroup><thead><tr><th>Perfil (digite ou escolha)</th><th>Descrição</th><th>Uso</th><th>Desconto (m)</th><th>Divisor</th><th>Qtd (fórmula)</th><th></th></tr></thead><tbody>${p.perfis.map((x,i)=>`<tr><td>${(()=>{const c=gP(x.perfilId),u=c&&c.imgKey?urlImagem(c.imgKey):"";return `<div class="pfc"><span class="pft">${u?`<img src="${esc(u)}" alt="Perfil ${esc(c.codigo)}">`:"—"}</span><input class="pfi" list="dl-perfis" autocomplete="off" placeholder="Código" aria-label="Código do perfil" data-l="perfis" data-i="${i}" data-k="perfilCod" value="${esc(c?c.codigo:"")}"></div>`})()}</td><td>${ip("perfis",i,"desc",x.desc,"text")}</td><td><select data-l="perfis" data-i="${i}" data-k="uso"><option ${x.uso==="L"?"selected":""}>L</option><option ${x.uso==="A"?"selected":""}>A</option><option ${x.uso==="P"?"selected":""}>P</option><option ${x.uso==="B"?"selected":""}>B</option></select></td><td>${ip("perfis",i,"desconto",x.desconto)}</td><td>${ip("perfis",i,"divisor",x.divisor)}</td><td>${ip("perfis",i,"qtd",x.qtd,"text")}</td><td><button class="sm danger x" title="Remover" aria-label="Remover" data-a="ldel" data-l="perfis" data-i="${i}">X</button></td></tr>`).join("")}</tbody></table><p><button class="sm" data-a="ladd" data-l="perfis">Adicionar perfil</button></p></div>
  <div class="panel tb"><h2>Acessórios</h2><table><thead><tr><th>Acessório</th><th>Qtd (fórmula)</th><th></th></tr></thead><tbody>${p.acessorios.map((x,i)=>`<tr><td><select data-l="acessorios" data-i="${i}" data-k="acId">${selOpt(D.acessorios,x.acId,c=>c.codigo+" · "+c.desc)}</select></td><td>${ip("acessorios",i,"qtd",x.qtd,"text")}</td><td><button class="sm danger x" title="Remover" aria-label="Remover" data-a="ldel" data-l="acessorios" data-i="${i}">X</button></td></tr>`).join("")}</tbody></table><p><button class="sm" data-a="ladd" data-l="acessorios">Adicionar acessório</button></p></div>
  <div class="panel tb"><h2>Vidros</h2><table class="tcv"><colgroup><col><col style="width:84px"><col style="width:58px"><col style="width:84px"><col style="width:58px"><col style="width:84px"><col style="width:40px"></colgroup><thead><tr><th>Vidro</th><th>Desc. larg. (m)</th><th>Div. larg.</th><th>Desc. alt. (m)</th><th>Div. alt.</th><th>Qtd (fórmula)</th><th></th></tr></thead><tbody>${p.vidros.map((x,i)=>`<tr><td><select data-l="vidros" data-i="${i}" data-k="vidroId">${selOpt(D.vidros,x.vidroId,c=>c.tipo)}</select></td><td>${ip("vidros",i,"descL",x.descL)}</td><td>${ip("vidros",i,"divL",x.divL)}</td><td>${ip("vidros",i,"descA",x.descA)}</td><td>${ip("vidros",i,"divA",x.divA)}</td><td>${ip("vidros",i,"qtd",x.qtd,"text")}</td><td><button class="sm danger x" title="Remover" aria-label="Remover" data-a="ldel" data-l="vidros" data-i="${i}">X</button></td></tr>`).join("")}</tbody></table><p><button class="sm" data-a="ladd" data-l="vidros">Adicionar vidro</button></p></div>`;
+ h+=`<div class="rd"><span class="wn">${prodSujo()?"● Alterações não salvas":""}</span><button class="primary" data-a="psalvar">Salvar ficha técnica</button></div>`;
  return h}
 function pedirNome(t,v=""){return new Promise(r=>{abrir(`<form id="f"><h2>${t}</h2><div class="field"><label for="nm">Nome do produto</label><input id="nm" value="${esc(v)}"></div><div class="rd"><button type="button" id="x">Cancelar</button><button class="primary">Salvar produto</button></div></form>`);$("#nm").focus();$("#x").onclick=()=>{fechar();r(null)};$("#f").onsubmit=e=>{e.preventDefault();const n=$("#nm").value.trim().toUpperCase();if(n){fechar();r(n)}}})}
 
@@ -278,16 +292,23 @@ const views={orcar:orcView,salvos:salvosView,perfis:()=>cadView("perfis"),acesso
 function render(){const r=(location.hash.replace(/^#\/?/,"")||"inicio").split("?")[0],n=views[r]?r:"inicio",cat=MENU.find(m=>m.itens.some(i=>i[0]===n));
  $(".app").classList.toggle("home",n==="inicio");$("#side").innerHTML=montarMenu(n,cat);
  const t=$("#tela");t.classList.toggle("full",n==="orcar");t.innerHTML=views[n]();const b=$("#busca");if(b)b.oninput=()=>{busca=b.value;const p=b.selectionStart;render();const x=$("#busca");x.focus();x.setSelectionRange(p,p)}}
-window.addEventListener("hashchange",()=>{busca="";render()});
+const rotaDe=()=>(location.hash.replace(/^#\/?/,"")||"inicio").split("?")[0];
+let rotaAtual=rotaDe(),hashAnt=location.hash;
+window.addEventListener("hashchange",async()=>{const nova=rotaDe(),alvo=location.hash;
+ if(rotaAtual==="produtos"&&nova!=="produtos"&&prodSujo()){history.replaceState(null,"",location.pathname+location.search+hashAnt);
+  if(await confirmarSaidaProd()){location.hash=alvo}return}
+ rotaAtual=nova;hashAnt=alvo;busca="";render()});
+window.addEventListener("beforeunload",e=>{if(prodSujo()){e.preventDefault();e.returnValue=""}});
 
-document.addEventListener("click",async e=>{const el=e.target.closest("[data-a]");if(!el)return;const a=el.dataset.a,id=el.dataset.id,k=el.dataset.k,i=+el.dataset.i,l=el.dataset.l,p=D.produtos.find(x=>x.id===prodSel);
+document.addEventListener("click",async e=>{const el=e.target.closest("[data-a]");if(!el)return;const a=el.dataset.a,id=el.dataset.id,k=el.dataset.k,i=+el.dataset.i,l=el.dataset.l,p=prodRasc();
  if(a==="cnovo")cadEditar(k);else if(a==="ced")cadEditar(k,id);else if(a==="cdel")cadExcluir(k,id);
- else if(a==="pnovo"){const n=await pedirNome("Novo produto");if(n){const q={id:uid(),nome:n,perfis:[],acessorios:[],vidros:[]};D.produtos.push(q);prodSel=q.id;salvar();render()}}
- else if(a==="pren"&&p){const n=await pedirNome("Renomear produto",p.nome);if(n){p.nome=n;salvar();render()}}
- else if(a==="pdel"&&p){if(await confirmar(`Excluir o produto "${p.nome}" e toda a sua composição?`,"Excluir produto")){D.produtos.splice(D.produtos.indexOf(p),1);salvar();render()}}
+ else if(a==="psalvar"){if(salvarFicha())render()}
+ else if(a==="pnovo"){if(!await confirmarSaidaProd())return;const n=await pedirNome("Novo produto");if(n){const q={id:uid(),nome:n,perfis:[],acessorios:[],vidros:[]};D.produtos.push(q);prodSel=q.id;Rasc=null;salvar();render()}}
+ else if(a==="pren"&&p){const n=await pedirNome("Renomear produto",p.nome);if(n){p.nome=n;render()}}
+ else if(a==="pdel"&&p){if(await confirmar(`Excluir o produto "${p.nome}" e toda a sua composição?`,"Excluir produto")){D.produtos.splice(D.produtos.findIndex(x=>x.id===prodSel),1);Rasc=null;salvar();render()}}
  else if(a==="ladd"&&p){const m={perfis:[D.perfis,x=>({perfilId:x.id,desc:"",uso:"L",desconto:0,divisor:1,qtd:"1"})],acessorios:[D.acessorios,x=>({acId:x.id,qtd:"1"})],vidros:[D.vidros,x=>({vidroId:x.id,descL:0,divL:1,descA:0,divA:1,qtd:"1"})]}[l];
-  if(!m[0].length){aviso("Cadastre o item no menu Cadastros primeiro.",1);return}p[l].push(m[1](m[0][0]));salvar();render()}
- else if(a==="ldel"&&p){p[l].splice(i,1);salvar();render()}
+  if(!m[0].length){aviso("Cadastre o item no menu Cadastros primeiro.",1);return}p[l].push(m[1](m[0][0]));render()}
+ else if(a==="ldel"&&p){p[l].splice(i,1);render()}
  else if(a==="oadd"){const c=calcF();if(!c.p){aviso("Cadastre um produto primeiro.",1);return}if(c.l<=0||c.a<=0){aviso("Informe largura e altura válidas.",1);return}
   {const vio=violacoes(c.p,c.l,c.a,c.pe,c.ba);if(vio.length&&!await confirmarConcordo(vio))return}
   const it0={produto:c.p.nome,largura:c.l,altura:c.a,peitoril:c.pe,bascula:c.ba,quantidade:c.q,mkp:c.m,custoUnit:c.u,unitarioVenda:c.uv,total:c.uv*c.q,av:c.av,corId:c.cor?c.cor.id:"",corNome:c.cor?c.cor.nome:"",custoKgCor:c.cor?c.cor.custoKg:null,vidroId:Cart.f.v||"",vidroNome:c.vd?c.vd.tipo:vidroPadraoNome(c.p)};if(Cart.ei!=null&&Cart.itens[Cart.ei]){Cart.itens[Cart.ei]=it0;Cart.ei=null;aviso("Item atualizado e recalculado.")}else Cart.itens.push(it0);render()}
@@ -310,19 +331,19 @@ document.addEventListener("input",e=>{const t=e.target,C=Cart;
  else if(t.id.startsWith("g-")){const k=t.id.slice(2),v=k==="empresa"?t.value:parseFloat(t.value);if(k==="empresa"||v>=0){D.config[k]=v;salvar()}}});
 document.addEventListener("focusin",e=>{if(e.target.classList&&e.target.classList.contains("pfi"))e.target.select()});
 document.addEventListener("change",async e=>{const t=e.target;
- if(t.id==="psel"){prodSel=t.value;render()}
+ if(t.id==="psel"){const nv=t.value;if(!await confirmarSaidaProd()){render();return}prodSel=nv;Rasc=null;render()}
  else if(t.id==="o-p"){Cart.f.p=t.value;aplicarPadroes(D.produtos.find(x=>x.id===t.value));render()}
- else if(t.dataset.lim){const p=D.produtos.find(x=>x.id===prodSel);if(!p)return;p.lim=p.lim||{};const n=parseFloat(String(t.value).trim().replace(",","."));p.lim[t.dataset.lim]=isNaN(n)||n<0?null:n;const q=p.lim;
+ else if(t.dataset.lim){const p=prodRasc();if(!p)return;p.lim=p.lim||{};const n=parseFloat(String(t.value).trim().replace(",","."));p.lim[t.dataset.lim]=isNaN(n)||n<0?null:n;const q=p.lim;
   const inv=[["aMin","aMax","Altura"],["lMin","lMax","Largura"],["bMin","bMax","Altura da báscula"],["pMin","pMax","Altura do peitoril"]].filter(x=>limN(q[x[0]])!==null&&limN(q[x[1]])!==null&&q[x[0]]>q[x[1]]);
   const vp=violacoes(p,limN(q.lPad),limN(q.aPad),temPeit(p)?limN(q.pPad):null,temBasc(p)?limN(q.bPad):null);
-  salvar();{const e=$("#lim-av");if(e)e.innerHTML=limFalta(p)}if(inv.length)aviso(inv[0][2]+": o mínimo é maior que o máximo.",1);else if(vp.length)aviso("Medida padrão fora dos limites — "+vp[0],1)}
- else if(t.dataset.k==="perfilCod"){const p=D.produtos.find(q=>q.id===prodSel),x=p.perfis[+t.dataset.i],nz=z=>String(z).toLowerCase().replace(/[\s\-._]/g,""),v=nz(t.value);let c=v?D.perfis.find(q=>nz(q.codigo)===v):null;if(!c&&v){const ps=D.perfis.filter(q=>nz(q.codigo).startsWith(v));if(ps.length===1)c=ps[0]}if(c){x.perfilId=c.id;salvar()}else if(v)aviso("Perfil \""+t.value.trim()+"\" não encontrado no cadastro. Cadastre-o em Perfis.",1);render()}
- else if(t.dataset.l){const p=D.produtos.find(x=>x.id===prodSel),x=p[t.dataset.l][+t.dataset.i],k=t.dataset.k;x[k]=t.type==="number"?(parseFloat(t.value)||0):t.value;if(k==="divisor"||k==="divL"||k==="divA")x[k]=x[k]||1;salvar();render()}
+  {const e=$("#lim-av");if(e)e.innerHTML=limFalta(p)}marcarSujo();if(inv.length)aviso(inv[0][2]+": o mínimo é maior que o máximo.",1);else if(vp.length)aviso("Medida padrão fora dos limites — "+vp[0],1)}
+ else if(t.dataset.k==="perfilCod"){const p=prodRasc(),x=p.perfis[+t.dataset.i],nz=z=>String(z).toLowerCase().replace(/[\s\-._]/g,""),v=nz(t.value);let c=v?D.perfis.find(q=>nz(q.codigo)===v):null;if(!c&&v){const ps=D.perfis.filter(q=>nz(q.codigo).startsWith(v));if(ps.length===1)c=ps[0]}if(c){x.perfilId=c.id}else if(v)aviso("Perfil \""+t.value.trim()+"\" não encontrado no cadastro. Cadastre-o em Perfis.",1);render()}
+ else if(t.dataset.l){const p=prodRasc(),x=p[t.dataset.l][+t.dataset.i],k=t.dataset.k;x[k]=t.type==="number"?(parseFloat(t.value)||0):t.value;if(k==="divisor"||k==="divL"||k==="divA")x[k]=x[k]||1;render()}
  else if(t.dataset.k&&t.dataset.i&&Cart.itens[+t.dataset.i]){const it=Cart.itens[+t.dataset.i],v=parseFloat(t.value);
   if(t.dataset.k==="quantidade")it.quantidade=Math.max(1,Math.round(v)||1);else it.mkp=v>0?v:1;
   it.unitarioVenda=Math.round(it.custoUnit*it.mkp*100)/100;it.total=it.unitarioVenda*it.quantidade;render()}
  else if(t.id==="arq"&&t.files[0]){const f=t.files[0];t.value="";try{const o=JSON.parse(await f.text()),d=migrar(o);
-  if(await confirmar("Importar este backup substitui todos os dados atuais. Continuar?","Substituir dados")){await prepararImagensImportadas(d);D=d;if(salvar()){aviso("Backup importado.");await carregarImagens();render()}}}catch(x){aviso("Arquivo inválido. Escolha um backup do SmartPAV.",1)}}});
+  if(await confirmar("Importar este backup substitui todos os dados atuais. Continuar?","Substituir dados")){await prepararImagensImportadas(d);D=d;Rasc=null;if(salvar()){aviso("Backup importado.");await carregarImagens();render()}}}catch(x){aviso("Arquivo inválido. Escolha um backup do SmartPAV.",1)}}});
 let Fonte="cart";const Modo={corte:"perfil",acess:"consol",vidros:"consol",barras:"cad"};const REF=10,SERRA=4;
 const BuscaP={num:"",cli:""};
 function fonteLista(){const n=nzb(BuscaP.num),c=nzb(BuscaP.cli);return D.orcamentos.filter(o=>o.id===Fonte||((!n||nzb(o.numero).includes(n))&&(!c||nzb(o.cliente).includes(c))))}
@@ -410,11 +431,11 @@ document.addEventListener("click",async e=>{const el=e.target.closest("[data-a]"
  if(a==="pfimg")$("#pfimgf").click();
  else if(a==="pfimgdel"){const r=cadPerfilR;if(r&&r.imgKey){const id=r.imgKey;await excluirImagem(id);if(IMG_URLS[id]){URL.revokeObjectURL(IMG_URLS[id]);delete IMG_URLS[id]}delete r.imgKey;const prev=$("#pfprev");if(prev)prev.innerHTML=`<span class="mu">Sem imagem</span>`;el.remove();salvar()}}
  else if(a==="pimg")$("#pimgf").click();
- else if(a==="pimgdel"){const p=D.produtos.find(x=>x.id===prodSel);if(p){const id=p.imgKey;if(id){await excluirImagem(id);if(IMG_URLS[id]){URL.revokeObjectURL(IMG_URLS[id]);delete IMG_URLS[id]}}delete p.img;delete p.imgKey;salvar();render()}}});
+ else if(a==="pimgdel"){const p=prodRasc();if(p){delete p.img;delete p.imgKey;render()}}});
 document.addEventListener("change",async e=>{if(e.target.id!=="pfimgf"||!e.target.files[0])return;const f=e.target.files[0],id=cadPerfilImgId;e.target.value="";if(!id||!cadPerfilR)return;if(f.size>20e6){aviso("Arquivo muito grande (limite de 20 MB).",1);return}try{const data=await reduzir(f),blob=await dataURLBlob(data),r=cadPerfilR,key=r.imgKey||uid();await guardarImagem(key,blob);if(IMG_URLS[key])URL.revokeObjectURL(IMG_URLS[key]);IMG_URLS[key]=URL.createObjectURL(blob);if(r)r.imgKey=key;const prev=$("#pfprev");if(prev)prev.innerHTML=`<img src="${esc(IMG_URLS[key])}" style="max-width:100%;max-height:100%;object-fit:contain">`;const btn=document.querySelector("[data-a=pfimg]");if(btn)btn.textContent="Trocar imagem";if(!document.querySelector("[data-a=pfimgdel]")){const b=document.createElement("button");b.type="button";b.className="sm danger x";b.title="Remover";b.setAttribute("aria-label","Remover");b.dataset.a="pfimgdel";b.textContent="X";btn?.after(b)}salvar()}catch(x){aviso("Não foi possível salvar a imagem do perfil.",1)}return});
-document.addEventListener("change",async e=>{if(e.target.id!=="pimgf"||!e.target.files[0])return;const f=e.target.files[0],p=D.produtos.find(x=>x.id===prodSel);e.target.value="";if(!p)return;
+document.addEventListener("change",async e=>{if(e.target.id!=="pimgf"||!e.target.files[0])return;const f=e.target.files[0],p=prodRasc();e.target.value="";if(!p)return;
  if(f.size>20e6){aviso("Arquivo muito grande (limite de 20 MB). Reduza a imagem e tente de novo.",1);return}
- try{const data=await reduzir(f),blob=await dataURLBlob(data),id=p.imgKey||uid();await guardarImagem(id,blob);if(IMG_URLS[id])URL.revokeObjectURL(IMG_URLS[id]);IMG_URLS[id]=URL.createObjectURL(blob);p.imgKey=id;delete p.img;if(salvar()){aviso("Imagem salva no IndexedDB.")}render()}catch(x){aviso("Não foi possível salvar a imagem no banco local. Tente novamente.",1)}});
+ try{const data=await reduzir(f),blob=await dataURLBlob(data),sv=D.produtos.find(x=>x.id===prodSel),id=p.imgKey&&(!sv||p.imgKey!==sv.imgKey)?p.imgKey:uid();await guardarImagem(id,blob);if(IMG_URLS[id])URL.revokeObjectURL(IMG_URLS[id]);IMG_URLS[id]=URL.createObjectURL(blob);p.imgKey=id;delete p.img;render()}catch(x){aviso("Não foi possível salvar a imagem no banco local. Tente novamente.",1)}});
 const BK={h:null,pend:false,t:null,max:15},BKID="__pasta_backup",ULT="smartpav:ultimoBackup";
 const backupOk=()=>typeof window.showDirectoryPicker==="function";
 const blobData=b=>new Promise((ok,er)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>er(r.error);r.readAsDataURL(b)});

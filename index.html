@@ -53,7 +53,7 @@ dialog{border:1px solid var(--ln);border-radius:var(--r);background:var(--sf);co
 .of .pimg{width:190px;height:190px}
 .og{display:grid;gap:.8rem;align-items:end;grid-template-columns:repeat(4,minmax(0,1fr))}.og .field{margin:0;min-width:0}.og .field.pw{grid-column:span 2}
 @media (min-width:761px){.og{grid-template-columns:repeat(12,minmax(0,1fr))}.og .field.pw{grid-column:span 8}.og .s2{grid-column:span 2}.og .s4{grid-column:span 4}}
-.lg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem .9rem}.lg .field{margin:0}
+.lg{display:grid;grid-template-columns:minmax(90px,1.3fr) repeat(3,minmax(0,1fr));gap:.5rem .7rem;align-items:center}.lg .lh{font-size:.82rem;color:var(--mu);font-weight:600}.lg .lr{font-weight:600}
 .ofq{display:flex;align-items:flex-end;gap:.6rem;flex-wrap:wrap}.ofq .field{margin:0}.ofq .qf{width:130px}.ofq .mf{width:90px}
 .ofr{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:.9rem;padding-top:.8rem;border-top:1px solid var(--ln)}
 .ofc{flex:1 1 420px;min-width:0}.ofr .rd{margin:0}
@@ -210,10 +210,9 @@ function confirmarConcordo(lista){return new Promise(r=>{
  dlg.oncancel=()=>r(false);i.focus()})}
 function limFalta(p){const q=limP(p),f=[["aMin","altura mínima"],["aMax","altura máxima"],["lMin","largura mínima"],["lMax","largura máxima"],["aPad","altura padrão"],["lPad","largura padrão"]].filter(x=>limN(q[x[0]])===null).map(x=>x[1]);return f.length?`<div class="wn">⚠ Preencha: ${f.join(", ")}.</div>`:""}
 function limHTML(p){const q=limP(p);
- const f=(k,l)=>`<div class="field"><label for="lm-${k}">${l}</label><input id="lm-${k}" data-lim="${k}" type="number" step="any" min="0" inputmode="decimal" value="${q[k]==null?"":esc(q[k])}"></div>`;
- const falta=limFalta(p);
-
- return `<div class="lg">${f("aMin","Altura mínima (m) *")}${f("aMax","Altura máxima (m) *")}${f("lMin","Largura mínima (m) *")}${f("lMax","Largura máxima (m) *")}${f("bMin","Altura da báscula mínima (m)")}${f("bMax","Altura da báscula máxima (m)")}${f("pMin","Altura do peitoril mínima (m)")}${f("pMax","Altura do peitoril máxima (m)")}${f("aPad","Altura padrão (m) *")}${f("lPad","Largura padrão (m) *")}${f("bPad","Altura da báscula padrão (m)")}${f("pPad","Altura do peitoril padrão (m)")}</div><div id="lim-av">${falta}</div><p class="mu">* Obrigatórios. Báscula e peitoril: deixe mínima e máxima em branco se o produto não tiver; os campos somem do orçamento (nada já cadastrado é apagado). Medidas fora dos limites pedem a confirmação "CONCORDO" ao adicionar o item.</p>`}
+ const c=(k,l)=>`<input data-lim="${k}" type="number" step="any" min="0" inputmode="decimal" aria-label="${l}" value="${q[k]==null?"":esc(q[k])}">`;
+ const row=(k,n,r)=>`<div class="lr">${n}${r?" *":""}</div>${c(k+"Min",n+" mínima")}${c(k+"Max",n+" máxima")}${c(k+"Pad",n+" padrão")}`;
+ return `<div class="lg"><div></div><div class="lh">Mínimo (m)</div><div class="lh">Máximo (m)</div><div class="lh">Padrão (m)</div>${row("a","Altura",1)}${row("l","Largura",1)}${row("b","Altura da báscula")}${row("p","Altura do peitoril")}</div><div id="lim-av">${limFalta(p)}</div><p class="mu">* Obrigatórios (mínimo, máximo e padrão). Báscula e peitoril: deixe mínimo e máximo em branco se o produto não tiver; os campos somem do orçamento (nada já cadastrado é apagado). Medidas fora dos limites pedem a confirmação "CONCORDO" ao adicionar o item.</p>`}
 let prodSel=null;
 function selOpt(L,v,f){return L.map(x=>`<option value="${x.id}" ${x.id===v?"selected":""}>${esc(f(x))}</option>`).join("")}
 function prodView(){const P=D.produtos;if(!P.find(p=>p.id===prodSel))prodSel=P[0]?.id;const p=P.find(x=>x.id===prodSel);

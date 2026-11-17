@@ -465,11 +465,81 @@ function statusBk(){let b=$("#bkbar");if(!b||!b.id){b=document.createElement("di
  b.innerHTML=t;b.style.display=t?"flex":"none"}
 function painelBk(){const u=+localStorage.getItem(ULT)||0,dt=u?new Date(u).toLocaleString("pt-BR"):"nunca";
  return `<div class="panel"><h2>Backup automático em pasta</h2>${!backupOk()?'<div class="wn">Este navegador não permite gravar em pasta. Use o Chrome ou o Edge.</div>':`<p class="mu">Escolha uma pasta, de preferência dentro do OneDrive ou Google Drive. O sistema grava uma cópia 1 minuto depois da última alteração e mantém as últimas ${BK.max}. Se o Chrome recusar a pasta, crie uma subpasta (ex.: Documentos\\SmartPAV Backup) e escolha ela.</p><p><b>Pasta:</b> ${BK.h?esc(BK.h.name):"não escolhida"} · <b>Último backup:</b> ${esc(dt)}${BK.pend?' · <span class="wn">pausado: clique em "Gravar agora" para reativar</span>':""}</p><button class="primary" data-a="bkpasta">${BK.h?"Trocar pasta":"Escolher pasta"}</button> ${BK.h?'<button data-a="bkagora">Gravar agora</button> <button class="danger" data-a="bkoff">Desativar</button>':""}`}</div>`}
-const _dv=views.dados;views.dados=()=>_dv()+painelBk();
+const _dv=views.dados;views.dados=()=>_dv()+painelNuvem()+painelBk();
 document.addEventListener("click",async e=>{const el=e.target.closest("[data-a]");if(!el)return;const a=el.dataset.a;
  if(a==="bkpasta"){try{const h=await showDirectoryPicker({id:"smartpav-backup",mode:"readwrite",startIn:"documents"});BK.h=h;await imgTx("readwrite",s=>s.put({id:BKID,handle:h}));const n=await gravarBackup(true);if(n)aviso("Pasta definida. Backup gravado: "+n);render()}catch(x){if(x&&x.name!=="AbortError")aviso("O Chrome não aceitou esta pasta. Crie uma subpasta (ex.: Documentos\\SmartPAV Backup) e escolha ela.",1)}}
  else if(a==="bkagora"||a==="bkativar"){const n=await gravarBackup(true);if(n)aviso("Backup gravado: "+n);render()}
  else if(a==="bkoff"){try{await imgTx("readwrite",s=>s.delete(BKID))}catch(x){}clearTimeout(BK.t);BK.h=null;BK.pend=false;statusBk();aviso("Backup automático desativado.");render()}});
+const NVK="smartpav:nuvem",NVARQ="smartpav_backup.json",NVCAM="/contents/"+NVARQ;
+function nvCfg(){try{return JSON.parse(localStorage.getItem(NVK))||{}}catch(e){return{}}}
+const nvOk=c=>!!(c.owner&&c.repo&&c.token);
+const nvRef=c=>"?ref="+encodeURIComponent(c.branch||"main");
+const nvB64=t=>new Promise((ok,er)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(",")[1]||"");r.onerror=()=>er(r.error);r.readAsDataURL(new Blob([t],{type:"application/json"}))});
+function nvApi(c,path,o){o=o||{};return fetch("https://api.github.com/repos/"+encodeURIComponent(c.owner)+"/"+encodeURIComponent(c.repo)+path,{method:o.method||"GET",cache:"no-store",body:o.body,headers:Object.assign({"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Authorization":"Bearer "+c.token},o.headers||{})})}
+function nvMsg(s){return s===401?"Token inválido ou expirado. Gere um novo token no GitHub e salve a configuração de novo.":s===403?"O GitHub recusou. Confira se o token tem a permissão Contents: Read and write neste repositório.":s===404?"Repositório não encontrado ou sem acesso. Confira usuário, nome do repositório e se o token foi liberado para ele.":"O GitHub respondeu com erro "+s+"."}
+function nvFalha(x){aviso(x&&x.s?nvMsg(x.s):(x&&x.msg)||"Não foi possível falar com o GitHub. Confira a internet.",1)}
+async function nvRepo(c){const r=await nvApi(c,"");if(!r.ok)throw{s:r.status};return r.json()}
+function nvPrecisa(){const c=nvCfg();if(!nvOk(c))throw{msg:"Preencha e salve a configuração da nuvem primeiro."};return c}
+function nvSalvarCfg(){const g=i=>(($("#"+i)||{}).value||"").trim(),old=nvCfg();let owner=g("nv-owner"),repo=g("nv-repo"),branch=g("nv-branch")||"main",token=g("nv-token")||old.token||"";
+ if(repo.includes("/")){const q=repo.split("/").filter(Boolean);if(q.length>=2&&!owner)owner=q[q.length-2];repo=q[q.length-1]||""}
+ repo=repo.replace(/\.git$/,"");
+ if(!/^[A-Za-z0-9-]+$/.test(owner))throw{msg:"Informe o usuário do GitHub (só letras, números e hífen)."};
+ if(!/^[A-Za-z0-9._-]+$/.test(repo))throw{msg:"Informe o nome do repositório de backup."};
+ if(!/^[A-Za-z0-9._\/-]+$/.test(branch))throw{msg:"Nome de branch inválido."};
+ if(!/^\S{20,}$/.test(token))throw{msg:"Cole o token de acesso do GitHub (sem espaços)."};
+ localStorage.setItem(NVK,JSON.stringify({owner,repo,branch,token,ultimo:old.ultimo||0}))}
+async function nvTestar(){const c=nvPrecisa(),r=await nvRepo(c);
+ if(!r.private)aviso("ATENÇÃO: o repositório "+r.full_name+" é PÚBLICO. Use um repositório privado para os backups.",1);
+ else aviso("Conexão ok com o repositório privado "+r.full_name+".");
+ if(r.default_branch&&r.default_branch!==(c.branch||"main"))aviso("A branch principal do repositório é \""+r.default_branch+"\". Você configurou \""+(c.branch||"main")+"\".",1)}
+async function nvEnviar(){const c=nvPrecisa(),rp=await nvRepo(c);
+ if(!rp.private)throw{msg:"Este repositório é PÚBLICO: qualquer pessoa veria seus dados. Use um repositório privado."};
+ const t=await backupTexto(),b64=await nvB64(t);
+ if(b64.length>60e6)throw{msg:"O backup passou de 45 MB e não cabe no envio pelo navegador."};
+ const put=b=>nvApi(c,NVCAM,{method:"PUT",body:JSON.stringify(b),headers:{"Content-Type":"application/json"}});
+ let ok=false;
+ for(let i=0;i<3&&!ok;i++){
+  const g=await nvApi(c,NVCAM+nvRef(c));let sha=null;
+  if(g.status===200)sha=(await g.json()).sha;else if(g.status!==404)throw{s:g.status};
+  const corpo={message:"Backup SmartPAV "+stamp(),content:b64,branch:c.branch||"main"};if(sha)corpo.sha=sha;
+  let r=await put(corpo);
+  if(!sha&&(r.status===404||r.status===422)){delete corpo.branch;r=await put(corpo)}
+  if(r.status===200||r.status===201)ok=true;else if(r.status!==409&&r.status!==422)throw{s:r.status}}
+ if(!ok)throw{msg:"O arquivo na nuvem mudou durante o envio. Tente de novo."};
+ c.ultimo=Date.now();localStorage.setItem(NVK,JSON.stringify(c));localStorage.setItem(ULT,String(c.ultimo));statusBk();
+ aviso("Backup completo enviado ao GitHub ("+(t.length/1048576).toFixed(1)+" MB).");render()}
+async function nvBaixar(){const c=nvPrecisa();
+ const r=await nvApi(c,NVCAM+nvRef(c),{headers:{"Accept":"application/vnd.github.raw+json"}});
+ if(r.status===404)throw{msg:"Ainda não há backup na nuvem neste repositório. Envie um primeiro pelo outro aparelho."};
+ if(!r.ok)throw{s:r.status};
+ let d;try{d=migrar(JSON.parse(await r.text()))}catch(e){throw{msg:"O arquivo da nuvem não é um backup válido do SmartPAV."}}
+ let quando="";try{const h=await nvApi(c,"/commits?path="+encodeURIComponent(NVARQ)+"&sha="+encodeURIComponent(c.branch||"main")+"&per_page=1");if(h.ok){const j=await h.json();if(j[0])quando=new Date(j[0].commit.committer.date).toLocaleString("pt-BR")}}catch(e){}
+ if(await confirmar("Baixar o backup da nuvem"+(quando?" (feito em "+quando+")":"")+" substitui todos os dados deste aparelho. Se este aparelho tem dados mais novos, envie-os para a nuvem antes. Continuar?","Substituir dados")){
+  await prepararImagensImportadas(d);D=d;Rasc=null;if(salvar()){await carregarImagens();render();aviso("Backup da nuvem restaurado.")}}}
+async function nvRodar(el,fn){const t=el.textContent;el.disabled=true;el.textContent="Aguarde…";try{await fn()}catch(x){nvFalha(x)}finally{el.disabled=false;el.textContent=t}}
+function painelNuvem(){const c=nvCfg(),dt=c.ultimo?new Date(c.ultimo).toLocaleString("pt-BR"):"nunca";
+ return `<div class="panel"><h2>Backup na nuvem (GitHub)</h2>
+ <p class="mu">Envia tudo (cadastros, orçamentos e imagens) para um repositório <b>privado</b> seu no GitHub. Em outro aparelho, um toque baixa tudo de volta. Não use o repositório onde o sistema está publicado: ele é público.</p>
+ <div class="og"><div class="field s4"><label for="nv-owner">Usuário do GitHub</label><input id="nv-owner" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(c.owner||"")}"></div>
+ <div class="field s4"><label for="nv-repo">Repositório privado</label><input id="nv-repo" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="smartpav-backup" value="${esc(c.repo||"")}"></div>
+ <div class="field s2"><label for="nv-branch">Branch</label><input id="nv-branch" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(c.branch||"main")}"></div>
+ <div class="field" style="grid-column:1/-1"><label for="nv-token">Token de acesso</label><input id="nv-token" type="password" autocomplete="off" spellcheck="false" placeholder="${c.token?"Token salvo (termina em "+esc(c.token.slice(-4))+"). Deixe em branco para manter.":"github_pat_…"}"></div></div>
+ <p><button class="primary" data-a="nvsalvar">Salvar configuração</button> <button data-a="nvtestar">Testar conexão</button> <button class="danger" data-a="nvlimpar">Remover configuração</button></p>
+ <p><button class="primary" data-a="nvenviar">Enviar backup para a nuvem</button> <button data-a="nvbaixar">Baixar backup da nuvem</button></p>
+ <p class="mu"><b>Último envio deste aparelho:</b> ${esc(dt)}${nvOk(c)?"":" · configuração pendente"}</p>
+ <details class="mu"><summary>Como configurar (uma vez em cada aparelho)</summary>
+ <ol><li>No GitHub, crie um repositório <b>privado</b> (ex.: smartpav-backup), marcando "Add a README file".</li>
+ <li>Em Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Generate new token: em Repository access escolha <b>Only select repositories</b> e marque só o repositório de backup; em Permissions → Repository permissions, deixe <b>Contents: Read and write</b>. Defina uma validade.</li>
+ <li>Cole aqui o usuário, o repositório e o token e toque em Salvar configuração e depois em Testar conexão.</li>
+ <li>Em outro aparelho, repita a configuração e use Baixar backup da nuvem.</li></ol>
+ <p>O token fica guardado só neste navegador e não entra nos backups. Se perder o aparelho, apague o token no GitHub. Cada envio fica no histórico do repositório (aba Commits).</p></details></div>`}
+document.addEventListener("click",async e=>{const el=e.target.closest("[data-a]");if(!el)return;const a=el.dataset.a;
+ if(a==="nvsalvar"){try{nvSalvarCfg();aviso("Configuração salva.");render()}catch(x){nvFalha(x)}}
+ else if(a==="nvtestar")await nvRodar(el,nvTestar);
+ else if(a==="nvenviar")await nvRodar(el,nvEnviar);
+ else if(a==="nvbaixar")await nvRodar(el,nvBaixar);
+ else if(a==="nvlimpar"){if(await confirmar("Remover a configuração da nuvem deste aparelho? O backup que está no GitHub não é apagado.","Remover")){localStorage.removeItem(NVK);render()}}});
+
 (async()=>{try{for(let i=0;i<100&&!imgDb;i++)await new Promise(r=>setTimeout(r,50));const r=imgDb?await obterImagem(BKID):null;BK.h=r&&r.handle||null;if(BK.h&&!(await permissao(BK.h,false)))BK.pend=true}catch(e){}statusBk()})();
 CAD.cores={t:"Cores dos perfis",un:"acabamento",lista:()=>D.cores,campos:[["nome","Cor / acabamento","t"],["custoKg","Custo do perfil (R$/kg)","n"]],uso:(p,id)=>D.cores.length<=1||D.orcamentos.some(o=>o.itens.some(i=>i.corId===id))||Cart.itens.some(i=>i.corId===id)};
 views.cores=()=>cadView("cores");

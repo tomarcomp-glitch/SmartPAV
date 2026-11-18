@@ -80,7 +80,10 @@ main.full{max-width:none}
 button.x{min-height:26px;min-width:26px;width:26px;padding:0;font-weight:700;line-height:1;font-size:.8rem}
 .tcv{table-layout:fixed;min-width:640px}.tcv th{white-space:normal;vertical-align:bottom}.tcv td{padding-left:.3rem;padding-right:.3rem}.tcv td input,.tcv td select{min-height:30px;padding:.2rem .3rem;font-size:.85rem}.tcv td:first-child select{font-size:.95rem}.tcv input[type=number]{-moz-appearance:textfield;text-align:center}.tcv input[type=number]::-webkit-outer-spin-button,.tcv input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .tcp col:last-child{width:40px!important}
-.bd.ib{display:inline-flex;flex-direction:column;align-items:center;vertical-align:top;line-height:1.15}.bd.ib small{font-size:.68em;font-weight:700;opacity:.85}.tcv select[data-k=uso]{text-align:center;font-weight:600}</style>
+.bd.ib{display:inline-flex;flex-direction:column;align-items:center;vertical-align:top;line-height:1.15}.bd.ib small{font-size:.68em;font-weight:700;opacity:.85}.tcv select[data-k=uso]{text-align:center;font-weight:600}.pn-t td:first-child,.pn-t th:first-child{position:sticky;left:0;background:var(--sf);z-index:1;min-width:240px;white-space:normal}
+.pn-t tr.pn-res td{background:var(--as);font-weight:700}.pn-t tr.pn-g td{background:var(--as);font-weight:700}
+.pn-m td,.pn-m th{padding:.3rem .35rem}.pn-i{width:92px;text-align:right}.pn-bs{width:112px;text-align:right}.pn-m select{min-width:170px}
+@media print{#imp .pn-t{font-size:10px}#imp .pn-t td:first-child,#imp .pn-t th:first-child{position:static;min-width:0}#imp .pn-t td,#imp .pn-t th{padding:.25rem .3rem}}</style>
 </head>
 <body>
 <div class="app">
@@ -554,6 +557,7 @@ const MENU=[
  {id:"compras",t:"Compras",ic:"cart",itens:[["r-compras","Lista de compras"],["r-acess","Relação de acessórios"],["r-vidros","Relação de vidros"]]},
  {id:"cadastros",t:"Cadastros",ic:"layers",itens:[["perfis","Perfis"],["acessorios","Acessórios"],["vidros","Vidros"],["cores","Cores dos perfis"]]},
  {id:"produtos",t:"Produtos",ic:"window",itens:[["produtos","Composição dos produtos"]]},
+ {id:"obra",t:"Obra",ic:"chart",itens:[["painel","Painel da obra"]]},
  {id:"sistema",t:"Sistema",ic:"sliders",itens:[["config","Configurações"],["dados","Backup e migração"]]}
 ];
 const ICON={
@@ -562,6 +566,7 @@ const ICON={
  cart:'<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
  layers:'<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
  window:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 12h18"/>',
+ chart:'<path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/>',
  sliders:'<path d="M3 6h9.5M17.5 6H21M3 12h3.5M11.5 12H21M3 18h11M19 18h2"/><circle cx="15" cy="6" r="2.5"/><circle cx="9" cy="12" r="2.5"/><circle cx="16.5" cy="18" r="2.5"/>',
  home:'<rect x="3" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6"/>',
  def:'<rect x="4" y="4" width="16" height="16" rx="3"/>'
@@ -593,6 +598,91 @@ function apView(){const d=escuroAtivo(),md=[["auto","Automático"],["claro","Cla
 const _cv=views.config;views.config=()=>_cv()+apView();
 document.addEventListener("click",e=>{const el=e.target.closest("[data-a]");if(!el)return;const a=el.dataset.a;
  if(a==="apm"||a==="app"){if(a==="apm")AP.modo=el.dataset.v;else AP.pal=el.dataset.v;try{localStorage.setItem(APK,JSON.stringify(AP))}catch(x){}aplicarAparencia();render()}});
+const PN_LIN=[
+ {k:"inst",t:"Instalação",g:1,modos:["valor"],pad:"valor"},
+ {k:"transp",t:"Transporte",g:1,modos:["valor"],pad:"valor"},
+ {k:"mo",t:"Mão de obra",g:1,modos:["valor"],pad:"valor"},
+ {k:"adm",t:"Administração",g:1,modos:["valor"],pad:"valor"},
+ {k:"frete",t:"Frete",g:2,modos:["valor","pct"],pad:"valor"},
+ {k:"com",t:"Comissão",g:2,modos:["pct","valor"],pad:"pct"},
+ {k:"fin",t:"Custo financeiro",g:2,modos:["pct","valor"],pad:"pct"},
+ {k:"prov",t:"Provisões trabalhistas",g:2,modos:["pctmo"],pad:"pctmo"},
+ {k:"imp",t:"Impostos",g:2,modos:["pct","valor"],pad:"pct"}];
+const PN_MODO={valor:"R$ por mês",pct:"% do faturamento",pctmo:"% da mão de obra"};
+const pnNum=v=>{let s=String(v==null?"":v).trim().replace(/\s/g,"").replace(/^R\$/,"");if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");else if((s.match(/\./g)||[]).length>1||/^[1-9]\d{0,2}\.\d{3}$/.test(s))s=s.replace(/\./g,"");const n=parseFloat(s);return isFinite(n)&&n>0?n:0};
+const pnFmt=x=>x?String(+(+x).toFixed(4)).replace(".",","):"";
+function pnGet(){let P=D.painel;if(!P||typeof P!=="object")P=D.painel={};
+ if(!Array.isArray(P.sel))P.sel=[];
+ P.meses=Math.min(60,Math.max(1,Math.round(+P.meses)||6));
+ if(typeof P.mat!=="boolean")P.mat=true;
+ if(typeof P.inicio!=="string")P.inicio="";
+ if(!P.lin||typeof P.lin!=="object")P.lin={};
+ PN_LIN.forEach(d=>{let l=P.lin[d.k];if(!l||typeof l!=="object")l=P.lin[d.k]={modo:d.pad,base:0,meses:[]};
+  if(!d.modos.includes(l.modo))l.modo=d.pad;l.base=+l.base||0;if(!Array.isArray(l.meses))l.meses=[];
+  while(l.meses.length<P.meses)l.meses.push(l.base);l.meses=l.meses.map(v=>+v||0)});
+ P.sel=P.sel.filter(id=>D.orcamentos.some(o=>o.id===id));return P}
+function pnMes(P,i){if(/^\d{4}-\d{2}$/.test(P.inicio)){const a=P.inicio.split("-").map(Number),d=new Date(a[0],a[1]-1+i,1);return["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"][d.getMonth()]+"/"+String(d.getFullYear()).slice(2)}return"Mês "+(i+1)}
+function pnCalc(){const P=pnGet(),N=P.meses,obs=D.orcamentos.filter(o=>P.sel.includes(o.id));
+ const fat=obs.reduce((s,o)=>s+(+o.total||o.itens.reduce((a,i)=>a+(+i.total||0),0)),0);
+ const mat=P.mat?obs.reduce((s,o)=>s+o.itens.reduce((a,i)=>a+(+i.custoUnit||0)*(+i.quantidade||0),0),0):0;
+ const sub=(a,b)=>a.map((x,i)=>x-b[i]),rec=Array(N).fill(fat/N),mt=Array(N).fill(mat/N),v={};
+ PN_LIN.forEach(d=>{const l=P.lin[d.k];v[d.k]=Array.from({length:N},(_,i)=>{const x=l.meses[i]||0;return l.modo==="valor"?x:l.modo==="pct"?rec[i]*x/100:(v.mo?v.mo[i]:0)*x/100})});
+ const mb=sub(rec,mt),op=["inst","transp","mo","adm"].reduce((a,k)=>sub(a,v[k]),mb),fim=["frete","com","fin","prov","imp"].reduce((a,k)=>sub(a,v[k]),op);
+ let ac=0;const acum=fim.map(x=>ac+=x);
+ return{P,N,obs,fat,mat,rec,mt,v,mb,op,fim,acum}}
+function pnDreHTML(c){c=c||pnCalc();if(!c.obs.length)return`<div class="vz">Selecione ao menos uma obra para montar a DRE.</div>`;
+ const P=c.P,N=c.N,fat=c.fat,sum=a=>a.reduce((s,x)=>s+x,0),pc=t=>fat?nf(t/fat*100,1)+"%":"—";
+ const cel=(x,o,b)=>{const y=o.neg?-x:x,st=o.res?` style="color:${y<0?"var(--dg)":"var(--ok)"}"`:"";return`<td class="n"${st}>${b?"<b>"+brl(y)+"</b>":brl(y)}</td>`};
+ const row=(t,a,o)=>{o=o||{};const tot=o.ult?a[a.length-1]:sum(a);return`<tr class="${o.res?"pn-res":""}"><td>${t}</td>${a.map(x=>cel(x,o)).join("")}${cel(tot,o,1)}<td class="n">${pc(tot)}</td></tr>`};
+ const hint=k=>{const l=P.lin[k];return l.modo==="valor"?"":` <span class="mu">(${PN_MODO[l.modo]})</span>`};
+ const nm=k=>esc(PN_LIN.find(d=>d.k===k).t),cus=k=>row("(−) "+nm(k)+hint(k),c.v[k],{neg:1});
+ const M=Array.from({length:N},(_,i)=>pnMes(P,i));
+ let h=`<table class="pn-t"><thead><tr><th>Descrição</th>${M.map(m=>`<th class="n">${m}</th>`).join("")}<th class="n">Total</th><th class="n">% do faturado</th></tr></thead><tbody>`;
+ h+=row("Faturamento (orçamentos selecionados)",c.rec,{res:0});
+ if(P.mat)h+=row("(−) Custo dos materiais (perfis, acessórios e vidros)",c.mt,{neg:1})+row("= Resultado após materiais (margem bruta)",c.mb,{res:1});
+ h+=["inst","transp","mo","adm"].map(cus).join("")+row("= Resultado operacional da obra",c.op,{res:1});
+ h+=["frete","com","fin","prov","imp"].map(cus).join("")+row("= Resultado final",c.fim,{res:1})+row("Resultado acumulado",c.acum,{res:1,ult:1});
+ h+=`</tbody></table>`;
+ return`<div class="tb">${h}</div><p class="mu">O faturamento${P.mat?" e o custo dos materiais são":" é"} dividido${P.mat?"s":""} igualmente entre os ${N} mês(es). Provisões trabalhistas incidem só sobre a mão de obra. Os custos digitados são replicados em todos os meses.</p>`}
+function pnResumo(c){c=c||pnCalc();if(!c.obs.length)return"";const t=c.fim.reduce((s,x)=>s+x,0);return`Resultado final: <b style="color:${t<0?"var(--dg)":"var(--ok)"}">${brl(t)}</b>${c.fat?" ("+nf(t/c.fat*100,1)+"% do faturado)":""}`}
+function pnSel(c){c=c||pnCalc();return`${c.obs.length} obra(s) selecionada(s) · Faturado: <b>${brl(c.fat)}</b>`}
+function pnAtualizar(){const c=pnCalc(),d=$("#pn-dre");if(d)d.innerHTML=pnDreHTML(c);const r=$("#pn-res");if(r)r.innerHTML=pnResumo(c);const s=$("#pn-sum");if(s)s.innerHTML=pnSel(c)}
+function pnRender(){const y=window.scrollY;render();window.scrollTo(0,y)}
+function pnMatriz(P){const M=Array.from({length:P.meses},(_,i)=>pnMes(P,i));
+ const grp=(t)=>`<tr class="pn-g"><td colspan="${3+P.meses}">${t}</td></tr>`;
+ const lin=g=>PN_LIN.filter(d=>d.g===g).map(d=>{const l=P.lin[d.k],
+  tipo=d.modos.length>1?`<select data-pn="modo" data-pl="${d.k}" aria-label="Tipo de ${esc(d.t)}">${d.modos.map(m=>`<option value="${m}" ${l.modo===m?"selected":""}>${PN_MODO[m]}</option>`).join("")}</select>`:`<span class="mu">${PN_MODO[d.modos[0]]}</span>`;
+  return`<tr><td>${esc(d.t)}</td><td>${tipo}</td><td><input class="pn-bs" data-pn="base" data-pl="${d.k}" inputmode="decimal" autocomplete="off" placeholder="0" value="${pnFmt(l.base)}" aria-label="Valor base de ${esc(d.t)}"></td>${M.map((m,i)=>`<td><input class="pn-i" data-pn="mes" data-pl="${d.k}" data-pm="${i}" inputmode="decimal" autocomplete="off" placeholder="0" value="${pnFmt(l.meses[i])}" aria-label="${esc(d.t)} em ${m}"></td>`).join("")}</tr>`}).join("");
+ return`<table class="pn-m"><thead><tr><th>Custo</th><th>Tipo</th><th class="n">Valor base</th>${M.map(m=>`<th class="n">${m}</th>`).join("")}</tr></thead><tbody>${grp("Custos da obra")}${lin(1)}${grp("Demais custos")}${lin(2)}</tbody></table>`}
+function painelView(){const P=pnGet(),L=D.orcamentos,c=pnCalc();
+ return`<div class="head"><h1>Painel da obra</h1><button class="primary" data-a="pnprint">Imprimir / salvar PDF</button></div>
+ <div class="panel"><h2>1. Obras para análise</h2>${L.length?`<div class="head" style="margin-bottom:.4rem"><div class="field" style="margin:0;min-width:240px"><input id="pn-busca" type="search" autocomplete="off" placeholder="Buscar por número ou cliente" aria-label="Buscar obra"></div><div><button class="sm" data-a="pnall">Selecionar todas</button> <button class="sm" data-a="pnnone">Limpar seleção</button></div></div>
+ <div class="tb" style="max-height:320px;overflow-y:auto"><table id="pn-obras"><thead><tr><th></th><th>Nº</th><th>Cliente / obra</th><th>Local</th><th>Data</th><th class="n">Itens</th><th class="n">Valor do orçamento</th></tr></thead><tbody>${L.map(o=>`<tr data-pn-t="${esc(o.numero+" "+o.cliente+" "+(o.local||""))}"><td><input type="checkbox" data-pn="sel" data-id="${o.id}" style="width:20px;min-height:20px" ${P.sel.includes(o.id)?"checked":""} aria-label="Selecionar #${esc(o.numero)}"></td><td><b>#${esc(o.numero)}</b></td><td>${esc(o.cliente)}</td><td>${esc(o.local||"-")}</td><td>${esc(o.data)}</td><td class="n">${o.itens.length}</td><td class="n">${brl(o.total)}</td></tr>`).join("")}</tbody></table></div>
+ <p class="mu" id="pn-sum" style="margin:.6rem 0 0">${pnSel(c)}</p>`:`<div class="vz">Nenhum orçamento salvo. Salve os orçamentos das obras em "Novo orçamento".</div>`}</div>
+ <div class="panel"><h2>2. Período de produção</h2><div class="g4"><div class="field"><label for="pn-meses">Número de meses</label><input id="pn-meses" data-pn="meses" type="number" min="1" max="60" step="1" inputmode="numeric" value="${P.meses}"></div><div class="field"><label for="pn-ini">Mês inicial (opcional)</label><input id="pn-ini" data-pn="inicio" type="month" value="${esc(P.inicio)}"></div></div>
+ <label style="display:flex;gap:.5rem;align-items:center;font-weight:600"><input type="checkbox" data-pn="mat" style="width:20px;min-height:20px" ${P.mat?"checked":""}> Incluir o custo dos materiais (perfis, acessórios e vidros) calculado nos orçamentos</label>
+ <p class="mu">O faturamento (soma dos orçamentos selecionados) e o custo dos materiais são divididos igualmente entre os meses.</p></div>
+ <div class="panel tb"><div class="head"><h2>3. Custos</h2><span id="pn-res">${pnResumo(c)}</span></div><p class="mu">Digite o valor base de cada linha: ele é replicado em todos os meses. Para um mês diferente, edite só a célula do mês. Se mudar o valor base, todos os meses voltam a ser replicados. Nas linhas em %, o valor é a porcentagem.</p>${pnMatriz(P)}</div>
+ <div class="panel"><h2>4. DRE da obra</h2><div id="pn-dre">${pnDreHTML(c)}</div></div>`}
+views.painel=painelView;
+document.addEventListener("change",e=>{const t=e.target,k=t.dataset&&t.dataset.pn;if(!k)return;const P=pnGet(),l=t.dataset.pl?P.lin[t.dataset.pl]:null;
+ if(k==="sel"){const i=P.sel.indexOf(t.dataset.id);if(t.checked&&i<0)P.sel.push(t.dataset.id);else if(!t.checked&&i>=0)P.sel.splice(i,1);salvar();pnAtualizar()}
+ else if(k==="meses"){P.meses=Math.min(60,Math.max(1,Math.round(pnNum(t.value))||1));salvar();pnRender()}
+ else if(k==="inicio"){P.inicio=/^\d{4}-\d{2}$/.test(t.value)?t.value:"";salvar();pnRender()}
+ else if(k==="mat"){P.mat=t.checked;salvar();pnAtualizar()}
+ else if(k==="modo"&&l){l.modo=t.value;l.base=0;l.meses=Array(P.meses).fill(0);salvar();aviso("Tipo alterado: os valores desta linha foram zerados.");pnRender()}
+ else if(k==="base"&&l){l.base=pnNum(t.value);l.meses=Array(P.meses).fill(l.base);salvar();pnRender()}
+ else if(k==="mes"&&l){l.meses[+t.dataset.pm]=pnNum(t.value);t.value=pnFmt(l.meses[+t.dataset.pm]);salvar();pnAtualizar()}});
+document.addEventListener("input",e=>{const t=e.target;if(t.id==="pn-busca"){const q=nzb(t.value);document.querySelectorAll("#pn-obras tbody tr").forEach(r=>{r.hidden=!!q&&!nzb(r.dataset.pnT).includes(q)})}});
+function pnImprimir(){const c=pnCalc();if(!c.obs.length){aviso("Selecione ao menos uma obra.",1);return}
+ const P=c.P,st=document.createElement("style");st.id="pn-pg";st.textContent="@media print{@page{size:A4 landscape;margin:10mm}}";document.head.appendChild(st);
+ window.addEventListener("afterprint",()=>{const s=$("#pn-pg");if(s)s.remove()},{once:true});
+ imprimirHTML(`<h2 style="text-align:center">${esc(D.config.empresa)} — Painel da obra · DRE</h2><p><b>Obras:</b> ${c.obs.map(o=>"#"+esc(o.numero)+" "+esc(o.cliente)).join("; ")}<br><b>Período de produção:</b> ${P.meses} mês(es)${/^\d{4}-\d{2}$/.test(P.inicio)?" · de "+pnMes(P,0)+" a "+pnMes(P,P.meses-1):""}<br><b>Faturado:</b> ${brl(c.fat)} · <b>Emitido em:</b> ${hoje()}</p>`+pnDreHTML(c))}
+document.addEventListener("click",e=>{const el=e.target.closest("[data-a]");if(!el)return;const a=el.dataset.a;
+ if(a==="pnall"){pnGet().sel=D.orcamentos.map(o=>o.id);salvar();pnRender()}
+ else if(a==="pnnone"){pnGet().sel=[];salvar();pnRender()}
+ else if(a==="pnprint")pnImprimir()});
+
 iniciar();
 </script>
 <script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script>

@@ -3,7 +3,7 @@
   "short_name": "SmartPAV",
   "description": "Orçamentos, plano de corte, otimização de barras e produção de esquadrias de alumínio.",
   "lang": "pt-BR",
-  "id": "./",
+  "id": "/SmartPAV/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
